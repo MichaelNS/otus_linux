@@ -1,0 +1,222 @@
+# docker pull mariadb
+Using default tag: latest
+latest: Pulling from library/mariadb
+ea362f368469: Pull complete
+adb9a1b1379d: Pull complete
+ac5c95406850: Pull complete
+fa48d8b47ec1: Pull complete
+bcf1feb44ac3: Pull complete
+8a5de7784a0f: Pull complete
+b8724b8a281a: Pull complete
+a8a7c3f612d6: Pull complete
+39b09b59e889: Pull complete
+14bc3a6b0a94: Pull complete
+Digest: sha256:5a37e65a6414d78f60d523c4ddcf93d715854337beb46f8beeb1a23d83262184
+Status: Downloaded newer image for mariadb:latest
+docker.io/library/mariadb:latest
+# docker images
+REPOSITORY                    TAG           IMAGE ID       CREATED        SIZE
+mariadb                       latest        d462573d8688   5 days ago     410MB
+hello-py                      0.2.0         952d153845bc   8 weeks ago    718MB
+<none>                        <none>        1f20f84ce99d   8 weeks ago    718MB
+gcr.io/k8s-minikube/kicbase   v0.0.27       9fa1cc16ad6d   3 months ago   1.08GB
+python                        3.5-onbuild   5d7379e38f5d   3 years ago    695MB
+#
+# docker run -p 127.0.0.1:3306:3306  --name mariadb -e MARIADB_ROOT_PASSWORD=superpass -d mariadb
+89a6c2bf364f89551418d4313bd0d8bacce6b1c656eb3f2ef5f733a3d1062a34
+#
+# docker ps
+CONTAINER ID   IMAGE     COMMAND                  CREATED         STATUS         PORTS                      NAMES
+89a6c2bf364f   mariadb   "docker-entrypoint.s…"   5 seconds ago   Up 4 seconds   127.0.0.1:3306->3306/tcp   mariadb
+#
+# docker run --name adminer --link mariadb:db -p 8080:8080 -d adminer
+Unable to find image 'adminer:latest' locally
+latest: Pulling from library/adminer
+59bf1c3509f3: Pull complete
+7c7da25b2876: Pull complete
+2bc599114627: Pull complete
+927a0b37a45a: Pull complete
+1766f36e2432: Pull complete
+4c13e0891ac6: Pull complete
+96910ad0ba0c: Pull complete
+0e19de6ed54b: Pull complete
+048644398ce6: Pull complete
+cba8c5e58abe: Pull complete
+535bfc906ede: Pull complete
+527eb8e75e3e: Pull complete
+80cb32e3f2f6: Pull complete
+113e05b41485: Pull complete
+754881ee7686: Pull complete
+Digest: sha256:c1258743fa99e7c1a48b0103e310ca37a80fe26e6499453c33716e4a162f5438
+Status: Downloaded newer image for adminer:latest
+337d5c397af3a72b77cf267fa25459b0bb4fbe020baac908490f60ed6ccd5153
+#
+# docker exec -ti adminer sh
+/var/www/html # cat /etc/hosts
+127.0.0.1	localhost
+::1	localhost ip6-localhost ip6-loopback
+fe00::0	ip6-localnet
+ff00::0	ip6-mcastprefix
+ff02::1	ip6-allnodes
+ff02::2	ip6-allrouters
+172.17.0.2	db 89a6c2bf364f mariadb
+172.17.0.3	337d5c397af3
+/var/www/html #
+# docker ps                                                          
+CONTAINER ID   IMAGE     COMMAND                  CREATED              STATUS              PORTS                      NAMES
+337d5c397af3   adminer   "entrypoint.sh docke…"   55 seconds ago       Up 54 seconds       0.0.0.0:8080->8080/tcp     adminer
+89a6c2bf364f   mariadb   "docker-entrypoint.s…"   About a minute ago   Up About a minute   127.0.0.1:3306->3306/tcp   mariadb
+# docker stop adminer
+adminer
+# docker stop mariadb
+mariadb
+#
+# docker rm adminer      
+adminer
+# docker rm mariadb  
+mariadb
+# docker rmi mariadb
+Untagged: mariadb:latest
+Untagged: mariadb@sha256:5a37e65a6414d78f60d523c4ddcf93d715854337beb46f8beeb1a23d83262184
+Deleted: sha256:d462573d8688665ea676252d2c2609f9ff748ee0d9b53744bcc358fb511a7438
+Deleted: sha256:f5d981b40ab97aa0606328035d3b138bc88df3b33251e30982b15350fe1c1633
+Deleted: sha256:8b862e3721698f612779ba42cce13b0a2a759790ab68dd624caf076be74012d4
+Deleted: sha256:70cd3a5e67bab4fc7b82f6e7bc65f21772add5681d998071fecd33a3bad77f9e
+Deleted: sha256:a3aad336c799db1027afbd5566fda3e9c1a93644a9a2c391f5125fb1875b7eab
+Deleted: sha256:717acde33f1a5f5bc40e192b69f2467a4e60719b75a8f0582d2d969ce6f877ed
+Deleted: sha256:54ef633f3cc84ea42c96f7c47ad2c6b7e8194e7cb9fb92270f64a4de62397af3
+Deleted: sha256:84456d0ba7aa8d67f9b0b6ffe7c1de0de4a38b1a7c46b5fe76d02e89afe1ea2c
+Deleted: sha256:078f705019d0d4d8da578ba7fe0913d95ca50d9e3ff82e45492d407428fd4a39
+Deleted: sha256:2ee65d59cff35a221f2bc007e974fda5116d3446a36d10b2cd7d87e3531d2a1b
+Deleted: sha256:0eba131dffd015134cb310c284b776c1e44d330146cd2f0e30c4e464d0b76d24
+# docker rmi adminer
+Untagged: adminer:latest
+Untagged: adminer@sha256:c1258743fa99e7c1a48b0103e310ca37a80fe26e6499453c33716e4a162f5438
+Deleted: sha256:e7ff5f92e5090766b9aaf4df6c017b76b3dd7789e353c0fb8b3e65c70bdb8196
+Deleted: sha256:55e553738ff3e1400d70d142347ab81a5f66ac549b602b1d7202513af9c88e29
+Deleted: sha256:b3ac3066c62e8d981c412ee1b6d80e135d118aa6e3e9d5ac04827abd7fff1e74
+Deleted: sha256:6819c385d89ddbfc3e73f4139fa9cdb08e9e38a4bb8437ede4938ac2748631b2
+Deleted: sha256:319b4bd5b19c07b744fcd64e617d879a6b72725cd18c8e37b5b0e23f27f32ab9
+Deleted: sha256:4004e96177f1ee1c68b9130fbb1f759bce3d13ab4ff970f1b4646e2d43c03564
+Deleted: sha256:f0d1fa1c416959ae8ec0d529050ca6a0e2b1779f7f4835922f6fed90bf618a4d
+Deleted: sha256:72bfc6b0f00f26e399fefc85c4ab53cfb09ff1aeb22aae17ab5dee4092b17adb
+Deleted: sha256:8cdfb6e1056ccf7000ba7130899f3ffb942cc8138427dbf7ce7cb8353dbd2192
+Deleted: sha256:9dc6fa5a88edf29f955486163f26aafb22d33cf1847fd858e6b5a630c2723dd2
+Deleted: sha256:8aaa80c2ba88878a0570c75c73e8b1c1af2873d119700fe314803207be8c24ba
+Deleted: sha256:7622f13318b7c147f1db10968ec0635e358783bb971c2f6f64dcd39a1ff5abf4
+Deleted: sha256:ef48f794a391900abb6978001f4e7a7204034bd4463fbfcaf09e7b55f56e3ca6
+Deleted: sha256:e1d6e0c7ad02a46b0884e507815143cd013136d4e8dc8204da715b896f5675c2
+Deleted: sha256:2b5880ba14a7c7c16a72ae1a15a5d5785fabe81d91d0da8dac258488af0dd8ac
+Deleted: sha256:8d3ac3489996423f53d6087c81180006263b79f206d3fdec9e66f0e27ceb8759
+# docker pull mariadb
+Using default tag: latest
+latest: Pulling from library/mariadb
+ea362f368469: Pull complete
+adb9a1b1379d: Pull complete
+ac5c95406850: Pull complete
+fa48d8b47ec1: Pull complete
+bcf1feb44ac3: Pull complete
+8a5de7784a0f: Pull complete
+b8724b8a281a: Pull complete
+a8a7c3f612d6: Pull complete
+39b09b59e889: Pull complete
+14bc3a6b0a94: Pull complete
+Digest: sha256:5a37e65a6414d78f60d523c4ddcf93d715854337beb46f8beeb1a23d83262184
+Status: Downloaded newer image for mariadb:latest
+docker.io/library/mariadb:latest
+# docker images
+REPOSITORY                    TAG           IMAGE ID       CREATED        SIZE
+mariadb                       latest        d462573d8688   5 days ago     410MB
+hello-py                      0.2.0         952d153845bc   8 weeks ago    718MB
+<none>                        <none>        1f20f84ce99d   8 weeks ago    718MB
+gcr.io/k8s-minikube/kicbase   v0.0.27       9fa1cc16ad6d   3 months ago   1.08GB
+python                        3.5-onbuild   5d7379e38f5d   3 years ago    695MB
+#
+# docker run -p 127.0.0.1:3306:3306  --name mariadb -e MARIADB_ROOT_PASSWORD=superpass -d mariadb
+89a6c2bf364f89551418d4313bd0d8bacce6b1c656eb3f2ef5f733a3d1062a34
+#
+# docker ps
+CONTAINER ID   IMAGE     COMMAND                  CREATED         STATUS         PORTS                      NAMES
+89a6c2bf364f   mariadb   "docker-entrypoint.s…"   5 seconds ago   Up 4 seconds   127.0.0.1:3306->3306/tcp   mariadb
+#
+# docker run --name adminer --link mariadb:db -p 8080:8080 -d adminer
+Unable to find image 'adminer:latest' locally
+latest: Pulling from library/adminer
+59bf1c3509f3: Pull complete
+7c7da25b2876: Pull complete
+2bc599114627: Pull complete
+927a0b37a45a: Pull complete
+1766f36e2432: Pull complete
+4c13e0891ac6: Pull complete
+96910ad0ba0c: Pull complete
+0e19de6ed54b: Pull complete
+048644398ce6: Pull complete
+cba8c5e58abe: Pull complete
+535bfc906ede: Pull complete
+527eb8e75e3e: Pull complete
+80cb32e3f2f6: Pull complete
+113e05b41485: Pull complete
+754881ee7686: Pull complete
+Digest: sha256:c1258743fa99e7c1a48b0103e310ca37a80fe26e6499453c33716e4a162f5438
+Status: Downloaded newer image for adminer:latest
+337d5c397af3a72b77cf267fa25459b0bb4fbe020baac908490f60ed6ccd5153
+#
+# docker exec -ti adminer sh
+/var/www/html # cat /etc/hosts
+127.0.0.1	localhost
+::1	localhost ip6-localhost ip6-loopback
+fe00::0	ip6-localnet
+ff00::0	ip6-mcastprefix
+ff02::1	ip6-allnodes
+ff02::2	ip6-allrouters
+172.17.0.2	db 89a6c2bf364f mariadb
+172.17.0.3	337d5c397af3
+/var/www/html #
+# docker ps                                                          
+CONTAINER ID   IMAGE     COMMAND                  CREATED              STATUS              PORTS                      NAMES
+337d5c397af3   adminer   "entrypoint.sh docke…"   55 seconds ago       Up 54 seconds       0.0.0.0:8080->8080/tcp     adminer
+89a6c2bf364f   mariadb   "docker-entrypoint.s…"   About a minute ago   Up About a minute   127.0.0.1:3306->3306/tcp   mariadb
+# docker stop adminer
+adminer
+# docker stop mariadb
+mariadb
+#
+# docker rm adminer      
+adminer
+# docker rm mariadb  
+mariadb
+# docker rmi mariadb
+Untagged: mariadb:latest
+Untagged: mariadb@sha256:5a37e65a6414d78f60d523c4ddcf93d715854337beb46f8beeb1a23d83262184
+Deleted: sha256:d462573d8688665ea676252d2c2609f9ff748ee0d9b53744bcc358fb511a7438
+Deleted: sha256:f5d981b40ab97aa0606328035d3b138bc88df3b33251e30982b15350fe1c1633
+Deleted: sha256:8b862e3721698f612779ba42cce13b0a2a759790ab68dd624caf076be74012d4
+Deleted: sha256:70cd3a5e67bab4fc7b82f6e7bc65f21772add5681d998071fecd33a3bad77f9e
+Deleted: sha256:a3aad336c799db1027afbd5566fda3e9c1a93644a9a2c391f5125fb1875b7eab
+Deleted: sha256:717acde33f1a5f5bc40e192b69f2467a4e60719b75a8f0582d2d969ce6f877ed
+Deleted: sha256:54ef633f3cc84ea42c96f7c47ad2c6b7e8194e7cb9fb92270f64a4de62397af3
+Deleted: sha256:84456d0ba7aa8d67f9b0b6ffe7c1de0de4a38b1a7c46b5fe76d02e89afe1ea2c
+Deleted: sha256:078f705019d0d4d8da578ba7fe0913d95ca50d9e3ff82e45492d407428fd4a39
+Deleted: sha256:2ee65d59cff35a221f2bc007e974fda5116d3446a36d10b2cd7d87e3531d2a1b
+Deleted: sha256:0eba131dffd015134cb310c284b776c1e44d330146cd2f0e30c4e464d0b76d24
+# docker rmi adminer
+Untagged: adminer:latest
+Untagged: adminer@sha256:c1258743fa99e7c1a48b0103e310ca37a80fe26e6499453c33716e4a162f5438
+Deleted: sha256:e7ff5f92e5090766b9aaf4df6c017b76b3dd7789e353c0fb8b3e65c70bdb8196
+Deleted: sha256:55e553738ff3e1400d70d142347ab81a5f66ac549b602b1d7202513af9c88e29
+Deleted: sha256:b3ac3066c62e8d981c412ee1b6d80e135d118aa6e3e9d5ac04827abd7fff1e74
+Deleted: sha256:6819c385d89ddbfc3e73f4139fa9cdb08e9e38a4bb8437ede4938ac2748631b2
+Deleted: sha256:319b4bd5b19c07b744fcd64e617d879a6b72725cd18c8e37b5b0e23f27f32ab9
+Deleted: sha256:4004e96177f1ee1c68b9130fbb1f759bce3d13ab4ff970f1b4646e2d43c03564
+Deleted: sha256:f0d1fa1c416959ae8ec0d529050ca6a0e2b1779f7f4835922f6fed90bf618a4d
+Deleted: sha256:72bfc6b0f00f26e399fefc85c4ab53cfb09ff1aeb22aae17ab5dee4092b17adb
+Deleted: sha256:8cdfb6e1056ccf7000ba7130899f3ffb942cc8138427dbf7ce7cb8353dbd2192
+Deleted: sha256:9dc6fa5a88edf29f955486163f26aafb22d33cf1847fd858e6b5a630c2723dd2
+Deleted: sha256:8aaa80c2ba88878a0570c75c73e8b1c1af2873d119700fe314803207be8c24ba
+Deleted: sha256:7622f13318b7c147f1db10968ec0635e358783bb971c2f6f64dcd39a1ff5abf4
+Deleted: sha256:ef48f794a391900abb6978001f4e7a7204034bd4463fbfcaf09e7b55f56e3ca6
+Deleted: sha256:e1d6e0c7ad02a46b0884e507815143cd013136d4e8dc8204da715b896f5675c2
+Deleted: sha256:2b5880ba14a7c7c16a72ae1a15a5d5785fabe81d91d0da8dac258488af0dd8ac
+Deleted: sha256:8d3ac3489996423f53d6087c81180006263b79f206d3fdec9e66f0e27ceb8759
+
+
