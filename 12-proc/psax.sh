@@ -10,7 +10,7 @@ do
         then
         PID=$proc
 
-    COMMAND=$(cat /proc/"$proc"/cmdline | strings -1)
+    COMMAND=$(strings -1 < /proc/"$proc"/cmdline)
     if [ "$COMMAND" != '' ]
         then
         COMMAND="[$(awk '/Name/{print $2}' /proc/"$proc"/status)]"
@@ -19,8 +19,8 @@ do
     fi
 
     User=$(awk '/Uid/{print $2}' /proc/"$proc"/status)
-    Stat=$(cat /proc/"$proc"/status | awk '/State/{print $2}')
-    RSS=$(cat /proc/"$proc"/status | awk '/VmRSS/{print $2}')
+    Stat=$(awk '/State/{print $2}' < /proc/"$proc"/status)
+    RSS=$(awk '/VmRSS/{print $2}' < /proc/"$proc"/status)
     if [[ User -eq 0 ]]
        then
        UserName='root'
