@@ -1,0 +1,198 @@
+vagrant ssh server
+Last login: Sun Dec  5 12:49:15 2021 from 10.0.2.2
+[vagrant@server ~]$ 
+[vagrant@server ~]$ 
+[vagrant@server ~]$ sudo su
+[root@server vagrant]# 
+[root@server vagrant]# 
+[root@server vagrant]# lsblk
+NAME   MAJ:MIN RM SIZE RO TYPE MOUNTPOINT
+sda      8:0    0  10G  0 disk 
+`-sda1   8:1    0  10G  0 part /
+sdb      8:16   0   1G  0 disk 
+sdc      8:32   0   1G  0 disk 
+sdd      8:48   0   1G  0 disk 
+sde      8:64   0   1G  0 disk 
+sdf      8:80   0   1G  0 disk 
+sdg      8:96   0   1G  0 disk 
+[root@server vagrant]# zpool create storage mirror /dev/sd{b,c,d,e}
+The ZFS modules are not loaded.
+Try running '/sbin/modprobe zfs' as root to load them.
+[root@server vagrant]# zfs
+missing command
+usage: zfs command args ...
+where 'command' is one of the following:
+
+	version
+
+	create [-p] [-o property=value] ... <filesystem>
+	create [-ps] [-b blocksize] [-o property=value] ... -V <size> <volume>
+	destroy [-fnpRrv] <filesystem|volume>
+	destroy [-dnpRrv] <filesystem|volume>@<snap>[%<snap>][,...]
+	destroy <filesystem|volume>#<bookmark>
+
+	snapshot [-r] [-o property=value] ... <filesystem|volume>@<snap> ...
+	rollback [-rRf] <snapshot>
+	clone [-p] [-o property=value] ... <snapshot> <filesystem|volume>
+	promote <clone-filesystem>
+	rename [-f] <filesystem|volume|snapshot> <filesystem|volume|snapshot>
+	rename [-f] -p <filesystem|volume> <filesystem|volume>
+	rename -r <snapshot> <snapshot>
+	bookmark <snapshot> <bookmark>
+	program [-jn] [-t <instruction limit>] [-m <memory limit (b)>]
+	    <pool> <program file> [lua args...]
+
+	list [-Hp] [-r|-d max] [-o property[,...]] [-s property]...
+	    [-S property]... [-t type[,...]] [filesystem|volume|snapshot] ...
+
+	set <property=value> ... <filesystem|volume|snapshot> ...
+	get [-rHp] [-d max] [-o "all" | field[,...]]
+	    [-t type[,...]] [-s source[,...]]
+	    <"all" | property[,...]> [filesystem|volume|snapshot|bookmark] ...
+	inherit [-rS] <property> <filesystem|volume|snapshot> ...
+	upgrade [-v]
+	upgrade [-r] [-V version] <-a | filesystem ...>
+
+	userspace [-Hinp] [-o field[,...]] [-s field] ...
+	    [-S field] ... [-t type[,...]] <filesystem|snapshot>
+	groupspace [-Hinp] [-o field[,...]] [-s field] ...
+	    [-S field] ... [-t type[,...]] <filesystem|snapshot>
+	projectspace [-Hp] [-o field[,...]] [-s field] ... 
+	    [-S field] ... <filesystem|snapshot>
+
+	project [-d|-r] <directory|file ...>
+	project -c [-0] [-d|-r] [-p id] <directory|file ...>
+	project -C [-k] [-r] <directory ...>
+	project [-p id] [-r] [-s] <directory ...>
+
+	mount
+	mount [-lvO] [-o opts] <-a | filesystem>
+	unmount [-f] <-a | filesystem|mountpoint>
+	share [-l] <-a [nfs|smb] | filesystem>
+	unshare <-a [nfs|smb] | filesystem|mountpoint>
+
+	send [-DnPpRvLecwhb] [-[i|I] snapshot] <snapshot>
+	send [-nvPLecw] [-i snapshot|bookmark] <filesystem|volume|snapshot>
+	send [-nvPe] -t <receive_resume_token>
+	receive [-vnsFhu] [-o <property>=<value>] ... [-x <property>] ...
+	    <filesystem|volume|snapshot>
+	receive [-vnsFhu] [-o <property>=<value>] ... [-x <property>] ... 
+	    [-d | -e] <filesystem>
+	receive -A <filesystem|volume>
+
+	allow <filesystem|volume>
+	allow [-ldug] <"everyone"|user|group>[,...] <perm|@setname>[,...]
+	    <filesystem|volume>
+	allow [-ld] -e <perm|@setname>[,...] <filesystem|volume>
+	allow -c <perm|@setname>[,...] <filesystem|volume>
+	allow -s @setname <perm|@setname>[,...] <filesystem|volume>
+
+	unallow [-rldug] <"everyone"|user|group>[,...]
+	    [<perm|@setname>[,...]] <filesystem|volume>
+	unallow [-rld] -e [<perm|@setname>[,...]] <filesystem|volume>
+	unallow [-r] -c [<perm|@setname>[,...]] <filesystem|volume>
+	unallow [-r] -s @setname [<perm|@setname>[,...]] <filesystem|volume>
+
+	hold [-r] <tag> <snapshot> ...
+	holds [-rH] <snapshot> ...
+	release [-r] <tag> <snapshot> ...
+	diff [-FHt] <snapshot> [snapshot|filesystem]
+	remap <filesystem | volume>
+	load-key [-rn] [-L <keylocation>] <-a | filesystem|volume>
+	unload-key [-r] <-a | filesystem|volume>
+	change-key [-l] [-o keyformat=<value>]
+	    [-o keylocation=<value>] [-o pbkfd2iters=<value>]
+	    <filesystem|volume>
+	change-key -i [-l] <filesystem|volume>
+
+Each dataset is of the form: pool/[dataset/]*dataset[@name]
+
+For the property list, run: zfs set|get
+
+For the delegated permission list, run: zfs allow|unallow
+[root@server vagrant]# zpool create storage mirror /dev/sd{b,c,d,e}
+The ZFS modules are not loaded.
+Try running '/sbin/modprobe zfs' as root to load them.
+[root@server vagrant]# exit
+[vagrant@server ~]$ 
+[vagrant@server ~]$ 
+[vagrant@server ~]$ 
+[vagrant@server ~]$ sudo -i
+[root@server ~]# 
+[root@server ~]# 
+[root@server ~]# 
+[root@server ~]# lsblk
+NAME   MAJ:MIN RM SIZE RO TYPE MOUNTPOINT
+sda      8:0    0  10G  0 disk 
+`-sda1   8:1    0  10G  0 part /
+sdb      8:16   0   1G  0 disk 
+sdc      8:32   0   1G  0 disk 
+sdd      8:48   0   1G  0 disk 
+sde      8:64   0   1G  0 disk 
+sdf      8:80   0   1G  0 disk 
+sdg      8:96   0   1G  0 disk 
+[root@server ~]# 
+[root@server ~]# 
+[root@server ~]# zpool create storage mirror /dev/sd{b,c,d,e}
+The ZFS modules are not loaded.
+Try running '/sbin/modprobe zfs' as root to load them.
+[root@server ~]# /sbin/modprobe zfs
+[root@server ~]# 
+[root@server ~]# 
+[root@server ~]# zpool create storage mirror /dev/sd{b,c,d,e}
+[root@server ~]# 
+[root@server ~]# 
+[root@server ~]# 
+[root@server ~]# for algo in {gzip,gzip-9,zle,lzjb,lz4}; do 
+>     zfs create storage/$algo -o compression=$algo
+>     cp -rf /etc /storage/$algo/
+> done
+
+[root@server ~]# zfs get compressratio
+NAME            PROPERTY       VALUE  SOURCE
+storage         compressratio  2.34x  -
+storage/gzip    compressratio  4.03x  -
+storage/gzip-9  compressratio  4.11x  -
+storage/lz4     compressratio  2.49x  -
+storage/lzjb    compressratio  2.18x  -
+storage/zle     compressratio  1.28x  -
+[root@server ~]# curl -L -o zfs_task1.tar.gz https://drive.google.com/u/0/uc?id=1KRBNW33QWqbvbVHa3hLJivOAt60yukkg&export=download
+[1] 5947
+[root@server ~]#   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   377    0   377    0     0     91      0 --:--:--  0:00:04 --:--:--    91
+100 7104k  100 7104k    0     0   839k      0  0:00:08  0:00:08 --:--:-- 1825k
+
+[1]+  Done                    curl -L -o zfs_task1.tar.gz https://drive.google.com/u/0/uc?id=1KRBNW33QWqbvbVHa3hLJivOAt60yukkg
+[root@server ~]# 
+[root@server ~]# 
+[root@server ~]# tar xzf zfs_task1.tar.gz
+
+[root@server ~]# 
+[root@server ~]# 
+[root@server ~]# zpool import -d ./zpoolexport/filea -d ./zpoolexport/fileb -a
+[root@server ~]# zfs get available,type,recordsize,compression,checksum otus
+NAME  PROPERTY     VALUE       SOURCE
+otus  available    350M        -
+otus  type         filesystem  -
+otus  recordsize   128K        local
+otus  compression  zle         local
+otus  checksum     sha256      local
+[root@server ~]# 
+[root@server ~]# 
+[root@server ~]# curl -L -o otus_task2.file https://drive.google.com/u/0/uc?id=1gH8gCL9y7Nd5Ti3IRmplZPF1XjzxeRAG&export=download
+[1] 6248
+[root@server ~]#   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   377    0   377    0     0    129      0 --:--:--  0:00:02 --:--:--   129
+100 5305k  100 5305k    0     0   846k      0  0:00:06  0:00:06 --:--:-- 1686k
+
+[1]+  Done                    curl -L -o otus_task2.file https://drive.google.com/u/0/uc?id=1gH8gCL9y7Nd5Ti3IRmplZPF1XjzxeRAG
+[root@server ~]# 
+[root@server ~]# zfs receive otus/storage < otus_task2.file
+[root@server ~]# 
+[root@server ~]# find /otus/storage/ -type f -name "secret_message" -exec cat {} \;
+https://github.com/sindresorhus/awesome
+
+
+

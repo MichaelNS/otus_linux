@@ -1,0 +1,31 @@
+1. Определение алгоритма с наилучшим сжатием
+
+lsblk
+zpool create storage mirror /dev/sd{b,c,d,e}
+
+for algo in {gzip,gzip-9,zle,lzjb,lz4}; do 
+	zfs create storage/$algo -o compression=$algo
+	cp -rf /etc /storage/$algo/
+done
+
+zfs get compressratio
+
+2. Определение настроек пула
+
+
+curl -L -o zfs_task1.tar.gz https://drive.google.com/u/0/uc?id=1KRBNW33QWqbvbVHa3hLJivOAt60yukkg&export=download
+tar xzf zfs_task1.tar.gz
+
+zpool import -d ./zpoolexport/filea -d ./zpoolexport/fileb -a
+
+zfs get available,type,recordsize,compression,checksum otus
+
+
+3. Найти сообщение от преподавателей.
+
+curl -L -o otus_task2.file https://drive.google.com/u/0/uc?id=1gH8gCL9y7Nd5Ti3IRmplZPF1XjzxeRAG&export=download
+
+zfs receive otus/storage < otus_task2.file
+
+find /otus/storage/ -type f -name "secret_message" -exec cat {} \;
+
