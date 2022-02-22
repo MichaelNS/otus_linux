@@ -1,0 +1,47 @@
+[vagrant@lvm ~]$ sudo script -c ./03_create_snapshot_of_home.sh 03_create_snapshot_of_home.script
+Script started, file is 03_create_snapshot_of_home.script
++ lvremove /dev/vg_root/lv_root
+  Logical volume vg_root/lv_root contains a filesystem in use.
++ vgremove /dev/vg_root
+Do you really want to remove volume group "vg_root" containing 1 logical volumes? [y/n]: y
+  Logical volume vg_root/lv_root contains a filesystem in use.
++ pvremove /dev/sdb
+  Can't open /dev/sdb exclusively.  Mounted filesystem?
++ lvcreate -n LogVol_Home -L 2G /dev/VolGroup00
+  Logical volume "LogVol_Home" created.
++ mkfs.xfs /dev/VolGroup00/LogVol_Home
+meta-data=/dev/VolGroup00/LogVol_Home isize=512    agcount=4, agsize=131072 blks
+         =                       sectsz=512   attr=2, projid32bit=1
+         =                       crc=1        finobt=0, sparse=0
+data     =                       bsize=4096   blocks=524288, imaxpct=25
+         =                       sunit=0      swidth=0 blks
+naming   =version 2              bsize=4096   ascii-ci=0 ftype=1
+log      =internal log           bsize=4096   blocks=2560, version=2
+         =                       sectsz=512   sunit=0 blks, lazy-count=1
+realtime =none                   extsz=4096   blocks=0, rtextents=0
++ mount /dev/VolGroup00/LogVol_Home /mnt/
++ cp -aR /home/vagrant /mnt/
++ rm -rf /home/vagrant
++ umount /mnt
++ mount /dev/VolGroup00/LogVol_Home /home/
+++ blkid /dev/VolGroup00/LogVol_Home
+++ cut '-d ' -f2
++ echo 'UUID="ac4fc77d-480f-48af-9b52-1019ec9d29b6" /home xfs defaults 0 0'
++ touch /home/file1 /home/file2 /home/file3 /home/file4 /home/file5 /home/file6 /home/file7 /home/file8 /home/file9 /home/file10 /home/file11 /home/file12 /home/file13 /home/file14 /home/file15 /home/file16 /home/file17 /home/file18 /home/file19 /home/file20
++ ls /home
+file1  file10  file11  file12  file13  file14  file15  file16  file17  file18  file19  file2  file20  file3  file4  file5  file6  file7  file8	file9  vagrant
++ lvcreate -L 100MB -s -n home_snap /dev/VolGroup00/LogVol_Home
+  Rounding up size to full physical extent 128.00 MiB
+  Logical volume "home_snap" created.
++ rm -f /home/file11 /home/file12 /home/file13 /home/file14 /home/file15 /home/file16 /home/file17 /home/file18 /home/file19 /home/file20
++ ls /home
+file1  file10  file2  file3  file4  file5  file6  file7  file8	file9  vagrant
++ umount /home
++ lvconvert --merge /dev/VolGroup00/home_snap
+  Merging of volume VolGroup00/home_snap started.
+  VolGroup00/LogVol_Home: Merged: 100.00%
++ mount /home
++ ls /home
+file1  file10  file11  file12  file13  file14  file15  file16  file17  file18  file19  file2  file20  file3  file4  file5  file6  file7  file8	file9  vagrant
+Script done, file is 03_create_snapshot_of_home.script
+
