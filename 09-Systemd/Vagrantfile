@@ -1,0 +1,13 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "centos/7"
+
+  config.vm.provision "shell", path: "provision/watchlog.sh"
+  config.vm.provision "shell", path: "provision/spawn-fcgi.sh"
+  config.vm.provision "shell", path: "provision/httpd-multi.sh"
+
+  config.vm.provision "shell", path: "provision/check.sh"
+end
+
