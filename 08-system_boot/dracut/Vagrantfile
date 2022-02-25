@@ -1,0 +1,22 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+  config.vm.box = "centos/7"
+#  config.vm.box = "centos/8.4"
+
+  config.vm.provider "virtualbox" do |v|
+    v.memory = 2048
+    v.cpus = 4
+  end
+
+  config.vm.provision "shell", inline: <<-SHELL
+      yum install -y plymouth\*
+      plymouth-set-default-theme spinfinity
+      plymouth-set-default-theme --list
+      dracut -f
+  SHELL
+
+  config.vm.provision "shell", path: "provision/dracut_init.sh"
+
+end
