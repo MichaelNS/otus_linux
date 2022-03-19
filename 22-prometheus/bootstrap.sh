@@ -33,21 +33,36 @@ wget https://github.com/prometheus/node_exporter/releases/download/v1.0.1/node_e
 tar -xvzf /home/vagrant/Downloads/node_exporter-1.0.1.linux-amd64.tar.gz
 
 # create a symbolic link of node_exporter
-sudo ln -s /home/vagrant/Prometheus/node_exporter/node_exporter-1.0.1.linux-amd64/node_exporter /usr/bin
+sudo ln -s /home/vagrant/Prometheus/node_exporter/node_exporter-1.0.1.linux-amd64/node_exporter /usr/local/bin
+
+
+sudo useradd --no-create-home --shell /bin/false nodeusr
+
+sudo chown -R nodeusr:nodeusr /usr/local/bin/node_exporter
 
 # edit node_exporter configuration file and add configuration so that it will automatically start in next boot
-cat <<EOF > /etc/init/node_exporter.conf
-# Run node_exporter-1.0.1.linux-amd64
+sudo cat <<EOF > /etc/systemd/system/node_exporter.service
+[Unit]
+Description=Node Exporter Service
+After=network.target
 
-start on startup
+[Service]
+User=nodeusr
+Group=nodeusr
+Type=simple
+ExecStart=/usr/local/bin/node_exporter
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
 
-script
-   /usr/bin/node_exporter
-end script
+[Install]
+WantedBy=multi-user.target
 EOF
 
+sudo systemctl daemon-reload
+
 # start service of node_exporter
-sudo service node_exporter start
+sudo systemctl enable node_exporter
+sudo systemctl start node_exporter
 
 cd /home/vagrant/Prometheus/server/prometheus-2.21.0.linux-amd64/
 
