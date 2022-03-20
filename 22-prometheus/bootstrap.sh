@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 sudo apt-get update
 
+sudo apt-get install stress
+
 # create downloads directory so that we can download all the packages
 # which are required during provisioning process
 mkdir /home/vagrant/Downloads
@@ -32,45 +34,81 @@ wget https://github.com/prometheus/node_exporter/releases/download/v1.0.1/node_e
 # extract node_exporter
 tar -xvzf /home/vagrant/Downloads/node_exporter-1.0.1.linux-amd64.tar.gz
 
-# create a symbolic link of node_exporter
-sudo ln -s /home/vagrant/Prometheus/node_exporter/node_exporter-1.0.1.linux-amd64/node_exporter /usr/local/bin
-
-
-sudo useradd --no-create-home --shell /bin/false nodeusr
-
-sudo chown -R nodeusr:nodeusr /usr/local/bin/node_exporter
+sudo cp /home/vagrant/Prometheus/node_exporter/node_exporter-1.0.1.linux-amd64/node_exporter /usr/local/bin/
+sudo useradd --no-create-home --shell /bin/false node_exporter
+sudo chown -R node_exporter:node_exporter /usr/local/bin/node_exporter
 
 # edit node_exporter configuration file and add configuration so that it will automatically start in next boot
 sudo cat <<EOF > /etc/systemd/system/node_exporter.service
 [Unit]
-Description=Node Exporter Service
-After=network.target
+Description=Node Exporter
+Wants=network-online.target
+After=network-online.target
 
 [Service]
-User=nodeusr
-Group=nodeusr
-Type=simple
+User=node_exporter
+Group=node_exporter
 ExecStart=/usr/local/bin/node_exporter
-ExecReload=/bin/kill -HUP $MAINPID
-Restart=on-failure
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=default.target
 EOF
 
 sudo systemctl daemon-reload
-
-# start service of node_exporter
-sudo systemctl enable node_exporter
 sudo systemctl start node_exporter
+sudo systemctl status node_exporter
+sudo systemctl enable node_exporter
+
+# -------------------
+
+sudo useradd --no-create-home --shell /bin/false prometheus
+
 
 cd /home/vagrant/Prometheus/server/prometheus-2.21.0.linux-amd64/
 
+
+sudo cp prometheus /usr/local/bin/
+sudo cp promtool /usr/local/bin/
+
+sudo mkdir /etc/prometheus
+sudo cp -r consoles/ \
+  /etc/prometheus/consoles
+sudo cp -r console_libraries/ \
+  /etc/prometheus/console_libraries
+#sudo cp prometheus.yml \
+#  /etc/prometheus/
+sudo chown -R prometheus:prometheus /etc/prometheus
+
+sudo mkdir /var/lib/prometheus
+sudo chown prometheus:prometheus /var/lib/prometheus
+
+
+sudo cat <<EOF > /etc/systemd/system/prometheus.service
+[Unit]
+Description=Prometheus
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=prometheus
+Group=prometheus
+ExecStart=/usr/local/bin/prometheus \
+    --config.file /etc/prometheus/prometheus.yml \
+    --storage.tsdb.path /var/lib/prometheus/ \
+    --web.console.templates=/etc/prometheus/consoles \
+    --web.console.libraries=/etc/prometheus/console_libraries
+
+[Install]
+WantedBy=default.target
+EOF
+
+
+
 # edit prometheus configuration file which will pull metrics from node_exporter
 # every 15 seconds time interval
-cat <<EOF > prometheus.yml
+sudo cat <<EOF > /etc/prometheus/prometheus.yml
 global:
-  scrape_interval:     15s # By default, scrape targets every 15 seconds.
+  scrape_interval: 1s # Set the scrape interval to every 1 second.
 
   # Attach these labels to any time series or alerts when communicating with
   # external systems (federation, remote storage, Alertmanager).
@@ -84,11 +122,16 @@ scrape_configs:
   - job_name: 'node-prometheus'
 
     static_configs:
-      - targets: ['localhost:9100']
+      - targets: ['localhost:9090', 'localhost:9100']
 EOF
 
-# start prometheus
-nohup ./prometheus > prometheus.log 2>&1 &
+
+sudo systemctl daemon-reload
+sudo systemctl start prometheus
+sudo systemctl status prometheus
+sudo systemctl enable prometheus
+
+# -----------------
 
 # download grafana
 wget https://dl.grafana.com/oss/release/grafana_6.7.0_amd64.deb -O /home/vagrant/Downloads/grafana_6.7.0_amd64.deb
@@ -98,8 +141,9 @@ sudo apt-get install -y adduser libfontconfig
 # install grafana 
 sudo dpkg -i /home/vagrant/Downloads/grafana_6.7.0_amd64.deb
 
-# start grafana service 
-sudo service grafana-server start
+sudo systemctl start grafana-server
+sudo systemctl status grafana-server
+sudo systemctl enable grafana-server
 
-# run on every boot
-sudo update-rc.d grafana-server defaults
+
+#stress --cpu 2 --timeout 60
