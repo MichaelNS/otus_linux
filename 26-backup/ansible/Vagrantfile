@@ -1,0 +1,39 @@
+Vagrant.configure('2') do |config|
+  config.vm.box = 'centos/7'
+  config.vm.provider "virtualbox" do |v|
+    # v.memory = 256
+    v.memory = 512
+    v.cpus = 3
+  end
+
+  config.vm.define 'backup', backup: true do |server|
+    server.vm.hostname = 'backup'
+    server.vm.network :private_network, ip: '192.168.11.160', netmask: '255.255.0.0'
+    server.vm.provider :virtualbox
+    server.vm.disk :disk, size: '300MB', name: "borg"
+    # server.vm.disk :disk, size: '2GB', name: "borg"
+
+  end
+
+  config.vm.define 'client', client: true do |server|
+    server.vm.hostname = 'client'
+    server.vm.network :private_network, ip: '192.168.11.150', netmask: '255.255.0.0'
+  end
+
+  config.vm.provision "file", source: "files/authorized_keys", destination: "~/authorized_keys"
+  config.vm.provision "shell", path: "./files/bootstrap.sh"
+  config.vm.provision :ansible do |ansible|
+    # ansible.verbose = 'vvvv'
+    # ansible.playbook = 'provisioning/playbook.yml'
+    # https://martincarstenbach.wordpress.com/2019/04/11/ansible-tipsntricks-provision-multiple-machines-in-parallel-with-vagrant-and-ansible/
+    ansible.playbook = 'provisioning/check.yml'
+    ansible.groups = {
+      'backups' => ['backup'],
+      'clients' => ['client']
+    }
+    ansible.host_vars = {
+      'backup' => { 'host_ip' => '192.168.11.160' },
+      'client' => { 'host_ip' => '192.168.11.150' }
+    }
+  end
+end

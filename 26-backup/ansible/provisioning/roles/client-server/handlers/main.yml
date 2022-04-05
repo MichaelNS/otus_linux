@@ -1,0 +1,8 @@
+---
+
+## Стартуем borg-timer
+- name: borg-timer start service
+  systemd:
+    name: borg-backup.timer
+    enabled: yes
+    state: started 
