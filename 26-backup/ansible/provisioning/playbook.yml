@@ -1,0 +1,26 @@
+---
+- name: Common Setup
+  become: yes
+  hosts: all
+  roles:
+    - common
+  tags:
+    - base
+
+- name: Setup backup server
+  become: yes
+  hosts:
+    - backups
+  roles:
+    - backup-server
+  tags:
+    - backup-server
+
+- name: Setup client server
+  become: yes
+  hosts:
+    - clients
+  roles:
+    - client-server
+  tags:
+    - client-server

@@ -1,0 +1,33 @@
+---
+- name: Setup Host File
+  template:
+    src: hosts.j2
+    dest: /etc/hosts
+    owner: root
+    group: root
+    mode: '0644'
+  poll: 0
+
+- name: Install epel-relese
+  yum:
+    name: epel-release
+  when:
+    ansible_distribution == "CentOS"
+
+  become: true
+
+- name: install_borgbackup
+  yum:
+    name: borgbackup
+    state: latest
+
+- name: allow ssh-connect by password
+  ansible.builtin.replace:
+    path: /etc/ssh/sshd_config 
+    regexp: 'PasswordAuthentication no'
+    replace: 'PasswordAuthentication yes'
+
+- name: restart sshd
+  ansible.builtin.service:
+    name: sshd
+    state: restarted
