@@ -1,0 +1,29 @@
+---
+- name: Common Setup
+  become: yes
+  hosts: all
+  roles:
+    - common
+  tags:
+    - base
+
+- name: Setup web server
+  become: true
+  become_method: sudo
+  hosts:
+    - webs
+  roles:
+    - web
+  tags:
+    - web-server
+
+- name: Setup log server
+  become: true
+  become_method: sudo
+  hosts:
+    - logs
+  
+  roles:
+    - log
+  tags:
+    - log-server
