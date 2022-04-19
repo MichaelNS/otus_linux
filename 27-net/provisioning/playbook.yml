@@ -1,0 +1,96 @@
+---
+- name: Common Setup
+  become: true
+  become_method: sudo
+  hosts: all
+  roles:
+    - common
+  tags:
+    - base
+
+- name: "setup inetRouter"
+  become: true
+  become_method: sudo
+  hosts: inetRouter
+  roles:
+    - inetRouter
+  tags:
+    - routers
+
+- name: "setup centralRouter"
+  become: true
+  become_method: sudo
+  hosts: centralRouter
+  roles:
+    - centralRouter
+  tags:
+    - routers
+
+- name: "setup office1Router"
+  become: true
+  become_method: sudo
+  hosts: office1Router
+  roles:
+    - office1Router
+  tags:
+    - routers
+
+- name: "setup office2Router"
+  become: true
+  become_method: sudo
+  hosts: office2Router
+  roles:
+    - office2Router
+  tags:
+    - routers
+
+
+
+- name: "setup centralServer"
+  become: true
+  become_method: sudo
+  hosts: centralServer
+  roles:
+    - centralServer
+  tags:
+    - servers
+
+- name: "setup office1Server"
+  become: true
+  become_method: sudo
+  hosts: office1Server
+  roles:
+    - office1Server
+  tags:
+    - servers
+
+- name: "setup office2Server"
+  become: true
+  become_method: sudo
+  hosts: office2Server
+  roles:
+    - office2Server
+  tags:
+    - servers
+
+
+# debug
+- name: "restart all network"
+  become: true
+  become_method: sudo
+  hosts: all
+  roles:
+    - restart
+  tags:
+    - restart
+
+
+- name: "unit-test"
+  become: true
+  become_method: sudo
+  gather_facts: false
+  hosts: all
+  roles:
+    - unit-test
+  tags:
+    - unit-test

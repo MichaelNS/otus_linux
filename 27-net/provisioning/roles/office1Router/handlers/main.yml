@@ -1,0 +1,4 @@
+---
+- name: restart_network
+  command: netplan apply
+  # command: netplan apply && netplan try --timeout 1

@@ -1,0 +1,20 @@
+---
+- name: set up route on office1Router
+  template:
+    src: 50-vagrant.yaml.j2
+    dest: /etc/netplan/50-vagrant.yaml
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart_network
+
+# - name: copy network_cfg
+#   template:
+#     src: 50-cloud-init.yaml.j2
+#     dest: /etc/netplan/50-cloud-init.yaml
+#     owner: root
+#     group: root
+#     mode: 0644
+  # notify:
+  #   - restart_network

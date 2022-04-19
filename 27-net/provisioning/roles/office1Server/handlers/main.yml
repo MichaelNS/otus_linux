@@ -1,0 +1,3 @@
+---
+- name: restart_network
+  command: netplan apply && netplan try

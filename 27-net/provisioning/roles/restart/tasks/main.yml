@@ -1,0 +1,35 @@
+---
+- name: start and enable iptables service
+  ansible.builtin.service:
+    name: iptables
+    state: restarted
+    enabled: true
+  when: (ansible_hostname == "inetRouter")
+
+- name: restart_network - OS RedHat
+  ansible.builtin.service:
+    name: network
+    state: restarted
+  when: ansible_os_family == "RedHat"
+
+- name: restart netplan - office1Router & office1Server
+  command: netplan apply && netplan try
+  when: (ansible_hostname == "office1Router") or
+        (ansible_hostname == "office1Server")
+
+# todo
+# - name: restart_networking - office2Router & office2Server
+#   ansible.builtin.service:
+#     name: networking
+#     state: restarted
+#   when: (ansible_hostname == "office2Router") or
+#          (ansible_hostname == "office2Server")
+
+# - name: Reboot host and wait for it to restart
+#   reboot:
+#     msg: "Reboot initiated by Ansible"
+#     connect_timeout: 5
+#     reboot_timeout: 600
+#     pre_reboot_delay: 0
+#     post_reboot_delay: 30
+#     test_command: whoami
