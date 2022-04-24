@@ -1,0 +1,31 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+Vagrant.configure("2") do |config|
+  config.vm.box = "centos/7"
+  config.vm.define "server" do |server|
+    server.vm.hostname = "server.loc"
+    server.vm.network "private_network", ip: "192.168.10.10"
+    server.vm.network "private_network", ip: "172.20.30.10"
+  end
+  config.vm.define "client" do |client|
+    client.vm.hostname = "client.loc"
+    client.vm.network "private_network", ip: "192.168.10.20"
+  end
+
+  config.vm.provision "file", source: "files/authorized_keys", destination: "~/authorized_keys"
+  config.vm.provision "shell", path: "./files/bootstrap.sh"
+  config.vm.provision :ansible do |ansible|
+    # ansible.verbose = 'vvvv'
+    # ansible.playbook = 'provisioning/playbook.yml'
+    # https://martincarstenbach.wordpress.com/2019/04/11/ansible-tipsntricks-provision-multiple-machines-in-parallel-with-vagrant-and-ansible/
+    ansible.playbook = 'provisioning/check.yml'
+    ansible.groups = {
+      'servers' => ['server'],
+      'clients' => ['client']
+    }
+    ansible.host_vars = {
+      'server' => { 'host_ip' => '192.168.11.10' },
+      'client' => { 'host_ip' => '192.168.11.20' }
+    }
+  end
+end

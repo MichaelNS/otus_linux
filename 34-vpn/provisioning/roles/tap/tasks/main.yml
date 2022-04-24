@@ -1,0 +1,10 @@
+---
+- name: copy openvpn conf to server
+  template:
+    src: tap-server.conf.j2
+    dest: /etc/openvpn/server.conf
+    owner: root
+    mode: 0644
+  notify:
+    - restart_openvpn
+  

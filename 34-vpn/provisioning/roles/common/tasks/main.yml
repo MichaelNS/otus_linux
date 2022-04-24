@@ -1,0 +1,36 @@
+---
+- name: disable selinux
+  shell: setenforce 0
+
+- name: set up forward packages across routers
+  sysctl:
+    name: net.ipv4.conf.all.forwarding
+    value: '1'
+    state: present
+  loop:
+    - net.ipv4.conf.all.forwarding
+    - net.ipv4.ip_forward
+
+## Install epel-release
+- name: Install epel-relese
+  yum:
+    name: epel-release
+  when:
+    ansible_distribution == "CentOS"
+
+- name: install default utils
+  yum:
+    name: "{{  item  }}"
+    state: latest
+  loop:
+    - iperf3
+    - openvpn
+    - easy-rsa
+
+- name: install utils server
+  yum:
+    name: "{{  item  }}"
+    state: latest
+  loop:
+      - easy-rsa
+  when: ansible_hostname == "server"

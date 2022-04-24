@@ -1,0 +1,40 @@
+---
+- name: Common Setup
+  become: true
+  hosts: all
+  roles:
+    - common
+  tags:
+    - base
+
+- name: generate openvpn certificates
+  become: true
+  hosts: all
+  roles:
+    - cert
+  tags:
+    - cert
+
+- name: turn tap openvpn mode
+  become: true
+  hosts: all
+  roles:
+    - tap
+  tags:
+    - tap
+
+- name: turn tun openvpn mode
+  become: true
+  hosts: all
+  roles:
+    - tun
+  tags:
+    - tun
+
+- name: ras
+  become: true
+  hosts: all
+  roles:
+    - ras
+  tags:
+    - ras
