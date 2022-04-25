@@ -2,3 +2,8 @@
 old/
 tmp_*
 
+
+authorized_keys
+setup_log
+*.crt
+*.key
