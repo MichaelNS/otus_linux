@@ -1,0 +1,32 @@
+---
+- name: Common Setup
+  become: true
+  hosts: all
+  roles:
+    - common
+  tags:
+    - common
+
+- name: base routing
+  become: true
+  hosts: all
+  roles:
+    - base
+  tags:
+    - base
+
+- name: asymmetric routing
+  become: true
+  hosts: all
+  roles:
+    - asymmetric
+  tags:
+    - asymmetric
+
+- name: symmetric routing
+  become: true
+  hosts: all
+  roles:
+    - symmetric
+  tags:
+    - symmetric
