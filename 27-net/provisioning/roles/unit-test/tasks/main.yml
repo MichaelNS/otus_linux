@@ -1,0 +1,26 @@
+---
+- name: check static routes
+  shell: ip r
+  register: result_ip_route
+
+- debug: msg="{{ result_ip_route.stdout_lines }}"
+
+
+- name: check default static routes
+  shell: ip r | grep default
+  register: result_ip_route
+
+- debug: msg="{{ result_ip_route.stdout_lines }}"
+
+
+- name: ping
+  shell: ping -c 1 8.8.8.8
+  register: result_ping
+
+- debug: msg="{{ result_ping.stdout_lines }}"
+
+- name: traceroute
+  shell: traceroute -m 3 8.8.8.8
+  register: result_traceroute
+
+- debug: msg="{{ result_traceroute.stdout_lines }}"

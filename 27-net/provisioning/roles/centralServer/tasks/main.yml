@@ -1,0 +1,21 @@
+# echo "GATEWAY=192.168.0.1" >> /etc/sysconfig/network-scripts/ifcfg-eth1
+- name: add default gateway for centralServer
+  lineinfile:
+    dest: /etc/sysconfig/network-scripts/ifcfg-eth1
+    line: GATEWAY=192.168.0.1
+
+
+- name: add routes
+  template:
+    src: '{{  item  }}'
+    dest: /etc/sysconfig/network-scripts/
+  loop:
+    - route-eth1
+  notify:
+    - restart_networking
+
+
+- name: restart_network
+  ansible.builtin.service:
+    name: network
+    state: restarted

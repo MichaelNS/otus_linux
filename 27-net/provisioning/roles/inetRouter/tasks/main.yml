@@ -1,0 +1,28 @@
+- name: stop firewalld
+  service:
+    name: firewalld
+    enabled: false
+    state: stopped
+
+- name: copy iptables config
+  template:
+    src: iptables.j2
+    dest: /etc/sysconfig/iptables
+    owner: root
+    group: root
+    mode: 0600
+
+- name: start and enable iptables service
+  service:
+    name: iptables
+    state: restarted
+    enabled: true
+
+- name: add routes
+  template:
+    src: '{{  item  }}'
+    dest: /etc/sysconfig/network-scripts/
+  loop:
+    - route-eth1
+  notify:
+    - restart_networking
