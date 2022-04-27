@@ -1,0 +1,48 @@
+---
+- name: Common Setup
+  become: true
+  hosts: all
+  roles:
+    - common
+  tags:
+    - base
+
+- name: ns01
+  become: true
+  hosts: ns01
+  roles:
+    - ns01
+  tags:
+    - ns01
+
+- name: ns02
+  become: true
+  hosts: ns02
+  roles:
+    - ns02
+  tags:
+    - ns02
+
+- name: client
+  become: true
+  hosts: client
+  roles:
+    - client
+  tags:
+    - client
+
+- name: client2
+  become: true
+  hosts: client2
+  roles:
+    - client2
+  tags:
+    - client2
+
+- name: unit-test
+  become: true
+  hosts: clients
+  roles:
+    - unit-test
+  tags:
+    - unit-test

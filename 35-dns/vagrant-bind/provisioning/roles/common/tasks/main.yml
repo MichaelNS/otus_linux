@@ -1,0 +1,23 @@
+---
+#Установка пакетов bind, bind-utils и ntp
+- name: install packages
+  yum:
+    name:
+    - bind
+    - bind-utils
+    state: latest
+    update_cache: true
+
+- name: copy transferkey to all servers and the client
+  copy:
+    src: named.zonetransfer.key
+    dest: /etc/named.zonetransfer.key
+    owner: root
+    group: named
+    mode: 0644
+
+- name: start chronyd
+  service:
+    name: chronyd
+    state: restarted
+    enabled: true

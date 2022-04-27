@@ -1,0 +1,41 @@
+---
+- name: ping client
+  block:
+    - name: ping www.newdns.lab
+      shell: ping -c 1 www.newdns.lab
+      register: result_ping
+    - debug: msg="{{ result_ping.stdout_lines }}"
+
+
+    - name: ping web1.dns.lab
+      shell: ping -c 1 web1.dns.lab
+      register: result_ping
+    - debug: msg="{{ result_ping.stdout_lines }}"
+
+    - name: ping web2.dns.lab
+      shell: ping -c 1 web2.dns.lab
+      register: result_ping
+      ignore_errors: true
+    - debug: msg="{{ result_ping.stdout_lines }}"
+  when: (ansible_hostname == "client")
+
+
+- name: ping client2
+  block:
+    - name: ping www.newdns.lab
+      shell: ping -c 1 www.newdns.lab
+      register: result_ping
+      ignore_errors: true
+    - debug: msg="{{ result_ping.stdout_lines }}"
+
+    - name: ping web1.dns.lab
+      shell: ping -c 1 web1.dns.lab
+      register: result_ping
+    - debug: msg="{{ result_ping.stdout_lines }}"
+
+    - name: ping web2.dns.lab
+      shell: ping -c 1 web2.dns.lab
+      register: result_ping
+      ignore_errors: true
+    - debug: msg="{{ result_ping.stdout_lines }}"
+  when: (ansible_hostname == "client2")
