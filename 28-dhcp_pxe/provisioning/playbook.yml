@@ -1,0 +1,18 @@
+---
+- name: Common Setup
+  become: true
+  hosts: pxeserver
+  roles:
+    - common
+  tags:
+    - base
+
+
+- name: set pxeserver
+  become: true
+  become_method: sudo
+  hosts: pxeserver
+  roles:
+    - pxeserver
+  tags:
+    - pxeserver
