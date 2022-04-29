@@ -1,0 +1,53 @@
+---
+- name: disable ufw
+  systemd:
+    name: ufw
+    state: stopped
+    enabled: false
+
+- name: add frr repo key
+  apt_key:
+    url: "https://deb.frrouting.org/frr/keys.asc"
+    state: present
+
+- name: add frr repo
+  ansible.builtin.apt_repository:
+    repo: deb https://deb.frrouting.org/frr focal frr-stable
+    # repo: deb https://deb.frrouting.org/frr $(lsb_release -s -c) frr-stable
+    filename: frr
+    state: present
+
+- name: install base tools
+  apt:
+    name: '{{  item  }}'
+    state: present
+    update_cache: true
+  loop:
+    - vim
+    - traceroute
+    - tcpdump
+    - net-tools
+    - frr
+    - frr-pythontools
+
+- name: allow ip forwarding
+  sysctl:
+    name: net.ipv4.conf.all.forwarding
+    value: '1'
+    state: present
+
+- name: copy daemons file
+  copy:
+    src: daemons
+    dest: /etc/frr/daemons
+    owner: frr
+    group: frr
+    mode: 0640
+  notify:
+    - restart_frr
+
+
+- name: delete default route
+  shell: ip route delete "{{  item  }}"
+  loop:
+    - default
