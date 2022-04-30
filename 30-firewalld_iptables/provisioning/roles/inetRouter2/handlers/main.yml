@@ -1,0 +1,15 @@
+---
+- name: restart_networking
+  ansible.builtin.service:
+    name: network
+    state: restarted
+
+- name: restart_knockd
+  ansible.builtin.service:
+    name: knockd
+    state: restarted
+
+- name: restart_sshd
+  ansible.builtin.service:
+    name: sshd
+    state: restarted
