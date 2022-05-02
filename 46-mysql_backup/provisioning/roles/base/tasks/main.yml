@@ -1,0 +1,30 @@
+---
+- name: Install EPEL release for all RedHat OS
+  yum: name=epel-release state=present
+  when: ansible_os_family == "RedHat"
+
+- name: allow ssh-connect by password
+  ansible.builtin.replace:
+    path: /etc/ssh/sshd_config
+    regexp: 'PasswordAuthentication no'
+    replace: 'PasswordAuthentication yes'
+
+- name: restart sshd
+  ansible.builtin.service:
+    name: sshd
+    state: restarted
+
+- name: import percona repo a key from a url
+  rpm_key:
+    key: https://www.percona.com/downloads/RPM-GPG-KEY-percona
+    state: present
+
+- name: install percona repo
+  yum:
+    name: https://repo.percona.com/yum/percona-release-latest.noarch.rpm
+    state: installed
+
+- name: install Percona-Server-server-57 and MySQL-python
+  yum:
+    name: Percona-Server-server-57, MySQL-python
+    state: latest

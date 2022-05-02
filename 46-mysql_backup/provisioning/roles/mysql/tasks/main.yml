@@ -1,0 +1,39 @@
+---
+- name: copy root_my.cnf
+  ansible.builtin.copy:
+    src: root_my.cnf
+    dest: /root/.my.cnf
+    owner: root
+    group: root
+
+- name: copy conf.d
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: /etc/my.cnf.d/
+    owner: root
+    group: root
+  with_items:
+      - 01-base.cnf
+      - 02-max-connections.cnf
+      - 03-performance.cnf
+      - 04-slow-query.cnf
+      - 05-binlog.cnf
+  # notify:
+    # - start_mysql_service
+
+- name: editing .conf files for slave
+  shell: |
+    sed -i 's/server-id = 1/server-id = 2/g' /etc/my.cnf.d/01-base.cnf
+    sed -i 's/#replicate-ignore-table=bet.events_on_demand/replicate-ignore-table=bet.events_on_demand/g' /etc/my.cnf.d/05-binlog.cnf
+    sed -i 's/#replicate-ignore-table=bet.v_same_event/replicate-ignore-table=bet.v_same_event/g' /etc/my.cnf.d/05-binlog.cnf
+  when: (ansible_hostname == "slave")
+
+- name: start_mysql_service
+  service:
+    name: mysql
+    state: started
+
+- name: change mysql root password
+  shell: TMP_PASS=$(cat /var/log/mysqld.log | grep root@localhost | awk '{ print $11 }'); echo $TMP_PASS; mysql -uroot -p$TMP_PASS --connect-expired-password -e "alter user 'root'@'localhost' identified by 'OtusOtus22*';"
+  ignore_errors: true
+
