@@ -1,0 +1,32 @@
+---
+- name: Base Setup
+  become: true
+  hosts: all
+  roles:
+    - base
+  tags:
+    - base
+
+- name: MySql Setup
+  become: true
+  hosts: all
+  roles:
+    - mysql
+  tags:
+    - mysql
+
+- name: mysql_master Setup
+  become: true
+  hosts: master
+  roles:
+    - mysql_master
+  tags:
+    - mysql_master
+
+- name: mysql_slave Setup
+  become: true
+  hosts: slave
+  roles:
+    - mysql_slave
+  tags:
+    - mysql_slave
