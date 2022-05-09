@@ -1,0 +1,53 @@
+---
+- name: Install pg01
+  hosts: pg01
+  become: true
+  vars:
+    postgresql_flavor: pgdg
+    postgresql_pg_hba_conf:
+      - host all all 192.168.11.192/32 trust
+      - host all all 192.168.11.193/32 trust
+    postgresql_conf:
+      - listen_addresses: "'localhost, 192.168.11.191'"
+  roles:
+    - galaxyproject.postgresql
+
+- name: Install pg02
+  hosts: pg02
+  become: true
+  vars:
+    postgresql_flavor: pgdg
+    postgresql_pg_hba_conf:
+      - host all all 192.168.11.191/32 trust
+      - host all all 192.168.11.193/32 trust
+    postgresql_conf:
+      - listen_addresses: "'localhost, 192.168.11.192'"
+  roles:
+    - galaxyproject.postgresql
+
+- name: Install pg03
+  hosts: pg03
+  become: true
+  vars:
+    postgresql_flavor: pgdg
+    postgresql_pg_hba_conf:
+      - host all all 192.168.11.191/32 trust
+      - host all all 192.168.11.192/32 trust
+      - host replication postgres 192.168.11.194/32 trust
+    postgresql_conf:
+      - listen_addresses: "'localhost, 192.168.11.193'"
+  roles:
+    - galaxyproject.postgresql
+
+
+- name: Install pgBackup
+  hosts: pgBackup
+  become: true
+  vars:
+    postgresql_flavor: pgdg
+    postgresql_pg_hba_conf:
+      - host all all 192.168.11.193/32 trust
+    postgresql_conf:
+      - listen_addresses: "'localhost, 192.168.11.194'"
+  roles:
+    - galaxyproject.postgresql

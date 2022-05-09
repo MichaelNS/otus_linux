@@ -7,3 +7,5 @@ authorized_keys
 setup_log
 *.crt
 *.key
+
+.imported_roles/
