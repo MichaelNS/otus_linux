@@ -1,0 +1,63 @@
+---
+- name: Install EPEL release for all RedHat OS
+  yum: name=epel-release state=present
+  when: ansible_os_family == "RedHat"
+
+- name: Install utility on RedHat OS
+  yum:
+    name:
+      - tcpdump
+      - traceroute
+      - net-tools
+      - nano
+    state: present
+    update_cache: yes
+  when: ansible_os_family == "RedHat"
+
+# knock-knock
+- name: install knock-client
+  yum:
+    name: knock
+    state: latest
+  when: (ansible_hostname == "centralRouter")
+
+- name: install knock-server
+  yum:
+    name: knock-server
+    state: latest
+  when: (ansible_hostname == "inetRouter")
+
+- name: install nginx
+  yum:
+    name: nginx
+    state: latest
+  notify:
+    - start_nginx
+  when: (ansible_hostname == "centralServer")
+
+- name: allow ssh-connect by password
+  ansible.builtin.replace:
+    path: /etc/ssh/sshd_config
+    regexp: 'PasswordAuthentication no'
+    replace: 'PasswordAuthentication yes'
+
+- name: restart sshd
+  ansible.builtin.service:
+    name: sshd
+    state: restarted
+
+- name: set up forward packages across routers
+  sysctl:
+    name: net.ipv4.conf.all.forwarding
+    value: '1'
+    state: present
+  when: "'routers' in group_names"
+
+# echo "DEFROUTE=no" >> /etc/sysconfig/network-scripts/ifcfg-eth0
+- name: disable default route
+  lineinfile:
+    dest: /etc/sysconfig/network-scripts/ifcfg-eth0
+    line: DEFROUTE=no
+  when: (ansible_hostname == "centralRouter") or
+        (ansible_hostname == "centralServer") or
+        (ansible_hostname == "inetRouter2")

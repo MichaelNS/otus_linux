@@ -1,0 +1,12 @@
+---
+- name: restart_networking
+  ansible.builtin.service:
+    name: network
+    state: restarted
+
+- name: start_nginx
+  service:
+    name: nginx 
+    state: started
+    enabled: yes
+        
