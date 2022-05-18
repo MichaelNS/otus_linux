@@ -1,0 +1,7 @@
+---
+- import_playbook: playbooks/inetRouter.yml
+- import_playbook: playbooks/centralRouter.yml
+- import_playbook: playbooks/testClient1.yml
+- import_playbook: playbooks/testServer1.yml
+- import_playbook: playbooks/testClient2.yml
+- import_playbook: playbooks/testServer2.yml

@@ -1,0 +1,6 @@
+---
+- hosts: testClient2
+  become: true
+  become_method: sudo
+  roles:
+    - testClient2
