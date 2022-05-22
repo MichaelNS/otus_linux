@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ansible-playbook -i .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory provisioning/playbook.yml
+ansible-playbook site.yml -i .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory
 
 # tags
-# ansible-playbook -i .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory provisioning/playbook.yml --list-tags
+# ansible-playbook site.yml -i .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory --list-tags
