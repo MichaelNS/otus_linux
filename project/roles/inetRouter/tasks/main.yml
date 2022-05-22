@@ -1,0 +1,32 @@
+---
+- name: install iptables service
+  yum:
+    name:
+      - iptables
+      - iptables-services
+    state: present
+    update_cache: true
+
+- name: set up forward packages across routers
+  sysctl:
+    name: net.ipv4.conf.all.forwarding
+    value: '1'
+    state: present
+
+# - ansible.posix.sysctl:
+#      name: net.ipv4.ip_forward
+#      value: '1'
+#      sysctl_set: yes
+#      state: present
+#      reload: yes
+
+# echo "DEFROUTE=no" >> /etc/sysconfig/network-scripts/ifcfg-eth0
+- name: disable default route
+  lineinfile:
+    dest: /etc/sysconfig/network-scripts/ifcfg-eth0
+    line: DEFROUTE=no
+
+- name: copy iptables config
+  copy:
+    src: iptables
+    dest: /etc/sysconfig/iptables

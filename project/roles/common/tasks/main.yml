@@ -1,0 +1,33 @@
+---
+#  - ansible.posix.sysctl:
+#     name: vm.swappiness
+#     value: '10'
+#     sysctl_set: yes
+#     state: present
+#     reload: yes
+
+- name: Install EPEL release for all RedHat OS
+  yum: name=epel-release state=present
+  when: ansible_os_family == "RedHat"
+
+# - name: Install utility on RedHat OS
+#   yum:
+#     name:
+#       - tcpdump
+#       - traceroute
+#       - net-tools
+#       - nano
+#     state: present
+#     update_cache: yes
+#   when: ansible_os_family == "RedHat"
+
+- name: allow ssh-connect by password
+  ansible.builtin.replace:
+    path: /etc/ssh/sshd_config
+    regexp: 'PasswordAuthentication no'
+    replace: 'PasswordAuthentication yes'
+
+- name: restart sshd
+  ansible.builtin.service:
+    name: sshd
+    state: restarted
