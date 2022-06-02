@@ -1,0 +1,17 @@
+---
+- name: restart nginx
+  ansible.builtin.systemd:
+    state: restarted
+    enabled: yes
+    name: nginx
+
+- name: start nginx
+  systemd:
+    state: started
+    enabled: yes
+    name: nginx
+
+# - name: restart rsyslog
+#   service:
+#     name: rsyslog
+#     state: restarted

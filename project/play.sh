@@ -4,3 +4,6 @@ ansible-playbook site.yml -i .vagrant/provisioners/ansible/inventory/vagrant_ans
 
 # tags
 # ansible-playbook site.yml -i .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory --list-tags
+
+# ansible-playbook site.yml -i .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory -t routers
+# ansible-playbook site.yml -i .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory -t web

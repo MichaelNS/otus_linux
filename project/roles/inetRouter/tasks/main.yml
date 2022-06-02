@@ -13,20 +13,25 @@
     value: '1'
     state: present
 
-# - ansible.posix.sysctl:
-#      name: net.ipv4.ip_forward
-#      value: '1'
-#      sysctl_set: yes
-#      state: present
-#      reload: yes
-
-# echo "DEFROUTE=no" >> /etc/sysconfig/network-scripts/ifcfg-eth0
-- name: disable default route
-  lineinfile:
-    dest: /etc/sysconfig/network-scripts/ifcfg-eth0
-    line: DEFROUTE=no
-
 - name: copy iptables config
   copy:
     src: iptables
     dest: /etc/sysconfig/iptables
+    owner: root
+    group: root
+    mode: 0600
+
+- name: start and enable iptables service
+  service:
+    name: iptables
+    state: restarted
+    enabled: true
+
+# - name: add routes
+#   copy:
+#     src: '{{  item  }}'
+#     dest: /etc/sysconfig/network-scripts/
+#   loop:
+#     - route-eth1
+#   notify:
+#     - restart_networking

@@ -1,0 +1,19 @@
+---
+path_to_backup_script: /opt/borgbackup.sh
+
+
+# Variables listed here are applicable to all host groups
+wp_version: 4.6
+wp_sha256sum: c1856cf969b1e73025ba2c681491908c3a4a6c5a2333f4531bf9bfb90f634380
+
+# MySQL settings
+mysqlservice: mysqld
+mysql_port: 3306
+
+# These are the WordPress database settings
+wp_db_server_ip: 192.168.30.3
+wp_server_ip: 192.168.20.2
+wp_db_name: wordpress
+wp_db_user: wordpress
+wp_db_password: secret
+wp_home_dir: /usr/share/nginx/html/

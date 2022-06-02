@@ -1,56 +1,26 @@
 ---
- - name: Install web-server
-   hosts: wordpressServer
-   remote_user: vagrant
-   become: yes
-   roles:
-     - common
-     - php-fpm
-     - nginx
-     - wordpress
-     - rsyslog-client
-     - zabbix-agent
+- name: Configure router
+  hosts: inetRouter
+  remote_user: vagrant
+  become: true
+  roles:
+    - common
+    - inetRouter
+    # - rsyslog-client
+    # - zabbix-agent
+  tags:
+    - routers
 
-
- - name: Install MySQL
-   hosts: mysqlServer
-   remote_user: vagrant
-   become: yes
-   roles:
-     - common
-     - mysql
-     - rsyslog-client
-     - zabbix-agent
-
-
- - name: Configure router
-   hosts: inetRouter
-   remote_user: vagrant
-   become: yes
-   roles:
-     - common
-     - router
-     - rsyslog-client
-     - zabbix-agent
-
-
- - name: Configure Backup-server
-   hosts: backupsServer
-   remote_user: vagrant
-   become: yes
-   roles:
-     - common
-     - borgbackup-server
-     - rsyslog-server
-     - zabbix-agent
-
-
- - name: Configure zabbix
-   hosts: zabbixServer
-   remote_user: vagrant
-   become: yes
-   roles:
-     - common
-     - nginx
-     - zabbix-server
-     - zabbix-agent
+- name: Install web-server
+  hosts: wordpressServer
+  remote_user: vagrant
+  become: true
+  roles:
+    - common
+    - php-fpm
+    - nginx
+    - wordpress
+    # - rsyslog-client
+    # - zabbix-agent
+  tags:
+    - web

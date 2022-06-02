@@ -4,7 +4,8 @@
 MACHINES = {
   :inetRouter => {
     :box_name => "centos/7",
-    #:public => {:ip => '10.10.10.1', :adapter => 1},
+    :vm_name => "inetRouter",
+    # :public => {:ip => '192.168.0.100', :adapter => 1},
     :net => [
       {ip: '192.168.10.10', adapter: 2, netmask: "255.255.255.0"},
       {ip: '192.168.20.1', adapter: 3, netmask: "255.255.255.0", virtualbox__intnet: "dmz"},
@@ -12,99 +13,64 @@ MACHINES = {
 
     ]
   },
-  :mysqlServer => {
-    :box_name => "centos/7",
-    :net => [
-      {ip: '192.168.30.3', adapter: 2, netmask: "255.255.255.0", virtualbox__intnet: "intranet"},
-    ]
-  },
+  # :mysqlServer => {
+  #   :box_name => "centos/7",
+  #   :net => [
+  #     {ip: '192.168.30.3', adapter: 2, netmask: "255.255.255.0", virtualbox__intnet: "intranet"},
+  #   ]
+  # },
   :wordpressServer => {
     :box_name => "centos/7",
     :net => [
       {ip: '192.168.20.2', adapter: 2, netmask: "255.255.255.0", virtualbox__intnet: "dmz"},
     ]
-  },
-  :backupsServer => {
-    :box_name => "centos/7",
-    :net => [
-      {ip: '192.168.30.5', adapter: 2, netmask: "255.255.255.0", virtualbox__intnet: "intranet"},
-    ]
-  },
-  :zabbixServer => {
-    :box_name => "centos/8",
-    :net => [
-      {ip: '192.168.40.10', adapter: 3, netmask: "255.255.255.0"},
-      {ip: '192.168.30.4', adapter: 2, netmask: "255.255.255.0", virtualbox__intnet: "intranet"},
-    ]
+  # },
+  # :backupsServer => {
+  #   :box_name => "centos/7",
+  #   :net => [
+  #     {ip: '192.168.30.5', adapter: 2, netmask: "255.255.255.0", virtualbox__intnet: "intranet"},
+  #   ]
+  # },
+  # :zabbixServer => {
+  #   :box_name => "centos/8",
+  #   :net => [
+  #     {ip: '192.168.40.10', adapter: 3, netmask: "255.255.255.0"},
+  #     {ip: '192.168.30.4', adapter: 2, netmask: "255.255.255.0", virtualbox__intnet: "intranet"},
+  #   ]
   }
 }
 
-
 Vagrant.configure("2") do |config|
-
   MACHINES.each do |boxname, boxconfig|
-
     config.vm.define boxname do |box|
-
       box.vm.box = boxconfig[:box_name]
-      box.vm.host_name = boxname.to_s
+      box.vm.host_name = boxconfig[:vm_name]
 
-      boxconfig[:net].each do |ipconf|
+     boxconfig[:net].each do |ipconf|
         box.vm.network "private_network", ipconf
       end
       if boxconfig.key?(:public)
         box.vm.network "public_network", boxconfig[:public]
       end
+    end
+  end
 
-      box.vm.provision "shell", inline: <<-SHELL
-        mkdir -p ~root/.ssh
-        cp ~vagrant/.ssh/auth* ~root/.ssh
-        SHELL
-      case boxname.to_s
-      when "inetRouter"
-        box.vm.synced_folder ".", "/vagrant", type: "rsync"
-        box.vm.provision "shell", run: "always", inline: <<-SHELL
-          echo "DEFROUTE=no" >> /etc/sysconfig/network-scripts/ifcfg-eth0
-            echo "GATEWAY=192.168.10.1" >> /etc/sysconfig/network-scripts/ifcfg-eth1
-            systemctl restart network
-            ip route add default via 192.168.10.1
-            SHELL
-      when "zabbixServer"
-      box.vm.provider "virtualbox" do |vb|
-        vb.memory = "1024"
-      end
-      box.vm.provision "shell", run: "always", inline: <<-SHELL
-      SHELL
-        when "wordpressServer"
-      box.vm.provider "virtualbox" do |vb|
-        vb.memory = "1024"
-        vb.cpus = "2"
-      end
-      box.vm.provision "shell", run: "always", inline: <<-SHELL
-      echo "DEFROUTE=no" >> /etc/sysconfig/network-scripts/ifcfg-eth0
-            echo "GATEWAY=192.168.20.1" >> /etc/sysconfig/network-scripts/ifcfg-eth1
-            systemctl restart network
-            ip route add default via 192.168.20.1
-      SHELL
-   when "mysqlServer"
-      box.vm.provision "shell", run: "always", inline: <<-SHELL
-      echo "DEFROUTE=no" >> /etc/sysconfig/network-scripts/ifcfg-eth0
-            echo "GATEWAY=192.168.30.1" >> /etc/sysconfig/network-scripts/ifcfg-eth1
-            systemctl restart network
-            ip route add default via 192.168.30.1
-            SHELL
-         when "backupsServer"
-      box.vm.provision "shell", run: "always", inline: <<-SHELL
-    echo "DEFROUTE=no" >> /etc/sysconfig/network-scripts/ifcfg-eth0
-            echo "GATEWAY=192.168.30.1" >> /etc/sysconfig/network-scripts/ifcfg-eth1
-            systemctl restart network
-            ip route add default via 192.168.30.1
-            SHELL
+  config.vm.provision "file", source: "files/authorized_keys", destination: "~/authorized_keys"
+  config.vm.provision "shell", path: "./files/bootstrap.sh"
+  config.vm.provision :ansible do |ansible|
+    # ansible.verbose = 'vvvv'
+    # https://martincarstenbach.wordpress.com/2019/04/11/ansible-tipsntricks-provision-multiple-machines-in-parallel-with-vagrant-and-ansible/
+
+    # Disable default limit to connect to all the machines
+    ansible.limit = "all"
+    ansible.playbook = 'provisioning/check.yml'
+    ansible.groups = {
+      'routers' => ['inetRouter'],
+      'servers' => ['wordpressServer']
+    }
+    ansible.host_vars = {
+      'inetRouter' => { 'host_ip' => '192.168.50.11' }
+
+    }
   end
-  end
-end
-config.vm.provision :ansible do |ansible|
-  ansible.playbook = "playbook.yml"
-  # ansible.verbose = "v"
-end
 end
