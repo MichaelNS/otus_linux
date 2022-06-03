@@ -1,4 +1,11 @@
 ---
+
+# yum install http://rpms.remirepo.net/enterprise/remi-release-7.rpm
+# yum install yum-utils
+# yum install php56
+# yum-config-manager --enable remi-php56
+
+
 - name: Install php-fpm and deps
   yum:
     name: "{{ item }}"

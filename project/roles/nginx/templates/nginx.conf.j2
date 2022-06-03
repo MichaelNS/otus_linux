@@ -57,13 +57,12 @@ http {
             fastcgi_intercept_errors on;
 
             fastcgi_index index.php;
-            fastcgi_pass unix:/var/run/php-fpm/wordpress.sock;
+            fastcgi_pass unix:{{ phpfpm_unix_socket }};
 
             include fastcgi_params;
 
-            fastcgi_param SCRIPT_FILENAME
-	    $document_root$fastcgi_script_name;
-            fastcgi_param SCRIPT_NAME $fastcgi_script_name;
+            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+            fastcgi_param SCRIPT_NAME     $fastcgi_script_name;
         }
 
         location ~ /\.(ht|ssh) {
@@ -72,7 +71,7 @@ http {
 
         location /status {
             include fastcgi_params;
-            fastcgi_pass unix:/var/run/php-fpm/wordpress.sock;
+            fastcgi_pass unix:{{ phpfpm_unix_socket }};
         }
     }
 }

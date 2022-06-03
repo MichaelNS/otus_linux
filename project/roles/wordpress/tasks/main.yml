@@ -1,6 +1,8 @@
 ---
 - name: Unpack archive
   unarchive:
+    # src: https://wordpress.org/wordpress-5.4.10.tar.gz
+    # src: https://wordpress.org/wordpress-5.4.4.tar.gz
     src: https://wordpress.org/wordpress-5.6.tar.gz
     dest: /usr/share/nginx/html
     remote_src: yes
@@ -47,6 +49,6 @@
 
 - name: Start php-fpm Service
   service: name=php-fpm state=started enabled=yes
-  ignore_errors: true
+  #ignore_errors: true
 
 #  - include_tasks: setup-borgbackup-client.yml

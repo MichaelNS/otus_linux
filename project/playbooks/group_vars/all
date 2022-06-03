@@ -1,0 +1,1 @@
+phpfpm_unix_socket: /var/opt/remi/php74/run/php-fpm/php-fpm.sock
