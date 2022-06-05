@@ -57,7 +57,7 @@ http {
             fastcgi_intercept_errors on;
 
             fastcgi_index index.php;
-            fastcgi_pass unix:{{ phpfpm_unix_socket }};
+            fastcgi_pass unix:{{ php_fpm_listen }};
 
             include fastcgi_params;
 
@@ -71,7 +71,7 @@ http {
 
         location /status {
             include fastcgi_params;
-            fastcgi_pass unix:{{ phpfpm_unix_socket }};
+            fastcgi_pass unix:{{ php_fpm_listen }};
         }
     }
 }

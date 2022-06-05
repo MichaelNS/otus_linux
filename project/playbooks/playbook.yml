@@ -16,10 +16,18 @@
   remote_user: vagrant
   become: true
   roles:
-    - common
-    - php-fpm
-    - nginx
-    - wordpress
+    - role: common
+    # - chusiang.php7
+    - role: nginx-cert
+
+    - role: geerlingguy.nginx
+      tags: nginx
+
+    - role: geerlingguy.php
+      tags: php
+
+    - role: wordpress
+      tags: mysql
     # - rsyslog-client
     # - zabbix-agent
   tags:
