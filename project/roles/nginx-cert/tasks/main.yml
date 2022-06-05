@@ -1,0 +1,13 @@
+---
+- name: create self-signed certificate
+  command: >
+       openssl req -x509 -nodes -subj '/' -days 365
+       -newkey rsa:2048 -sha256 -keyout {{ key_path }} -out {{ cert_path }}
+  # notify:
+  #    - restart nginx
+
+# - name: http service state
+#   systemd:
+#     name: nginx
+#     state: started
+#     enabled: yes

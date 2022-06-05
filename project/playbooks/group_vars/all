@@ -17,6 +17,11 @@ wp_db_password: secret
 wp_home_dir: /var/www/{{ server_name }}/wordpress
 
 
+
+key_path: /etc/pki/tls/private/nginx-selfsigned.key
+cert_path: /etc/pki/tls/certs/nginx-selfsigned.crt
+
+
   # - listen: "443 ssl http2"
 
 # nginx_user: root
@@ -27,6 +32,8 @@ nginx_vhosts:
     server_name: "{{ server_name }}"
     server_name_redirect: "www.{{ server_name }}"
     root: "/var/www/{{ server_name }}/wordpress"
+    # ssl_certificate: "{{ cert_path }}"
+    # ssl_certificate_key: "{{ key_path }}"
     # index: "index.php index.html index.htm"
     # error_page: "500 502 503 504  /50x.html"
     access_log: "/var/log/nginx/{{ server_name }}.access.log  main"
@@ -68,6 +75,10 @@ nginx_vhosts:
       }
 
 #
+      # ssl_certificate {{ cert_path }};
+      # ssl_certificate_key {{ key_path }};
+
+
       # ssl_certificate     /etc/ssl/certs/ssl-cert-snakeoil.pem;
       # ssl_certificate_key /etc/ssl/private/ssl-cert-snakeoil.key;
       # ssl_protocols       TLSv1.1 TLSv1.2;
