@@ -13,12 +13,12 @@ MACHINES = {
 
     ]
   },
-  # :mysqlServer => {
-  #   :box_name => "centos/7",
-  #   :net => [
-  #     {ip: '192.168.30.3', adapter: 2, netmask: "255.255.255.0", virtualbox__intnet: "intranet"},
-  #   ]
-  # },
+  :mysqlServer => {
+    :box_name => "centos/7",
+    :net => [
+      {ip: '192.168.30.3', adapter: 2, netmask: "255.255.255.0", virtualbox__intnet: "intranet"},
+    ]
+  },
   :wordpressServer => {
     :box_name => "centos/7",
     :net => [

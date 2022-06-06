@@ -29,6 +29,16 @@
     - role: wordpress
       tags: mysql
     # - rsyslog-client
-    # - zabbix-agent
   tags:
     - web
+
+- name: Install MySQL
+  hosts: mysqlServer
+  remote_user: vagrant
+  become: true
+  roles:
+    - role: common
+
+    - role: mysql
+  tags:
+    - mysql
