@@ -1,6 +1,4 @@
 ---
-
-# WordPress Configuration
 - name: create /var/www/{{ server_name }} directory for unarchiving
   file:
     path: /var/www/{{ server_name }}
@@ -43,16 +41,9 @@
 
 
 
-
-# todo - uncomment
-# - name: Set up wp-config
-#   template:
-#     src: "wp-config.php.j2"
-#     dest: "/var/www/{{ server_name }}/wordpress/wp-config.php"
-
 - name: Copy WordPress config file
   template:
-    src: wp-config.php
+    src: wp-config.php.j2
     dest: "/var/www/{{ server_name }}/wordpress/wp-config.php"
 
 
