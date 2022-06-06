@@ -22,20 +22,13 @@ key_path: /etc/pki/tls/private/nginx-selfsigned.key
 cert_path: /etc/pki/tls/certs/nginx-selfsigned.crt
 
 
-  # - listen: "443 ssl http2"
-
 # nginx_user: root
 
 nginx_vhosts:
-  - listen: "80"
-    # listen: "443 ssl"
+  - listen: "443 ssl http2"
     server_name: "{{ server_name }}"
-    server_name_redirect: "www.{{ server_name }}"
+    # server_name_redirect: "www.{{ server_name }}"
     root: "/var/www/{{ server_name }}/wordpress"
-    # ssl_certificate: "{{ cert_path }}"
-    # ssl_certificate_key: "{{ key_path }}"
-    # index: "index.php index.html index.htm"
-    # error_page: "500 502 503 504  /50x.html"
     access_log: "/var/log/nginx/{{ server_name }}.access.log  main"
     error_log: "/var/log/nginx/{{ server_name }}.error_log"
     state: "present"
@@ -54,7 +47,7 @@ nginx_vhosts:
           expires 14d;
           add_header Access-Control-Allow-Origin *;
           add_header Cache-Control public;
-          root /var/www/site.project/html;
+          root /var/www/{{ server_name }}/wordpress;
       }
       location @statics {
           rewrite ^/(\w+)/(.*)$ /$2 break;
@@ -63,7 +56,7 @@ nginx_vhosts:
           expires 14d;
           add_header Cache-Control public;
           add_header Access-Control-Allow-Origin *;
-          root /var/www/site.project/html;
+          root /var/www/{{ server_name }}/wordpress;
       }
       location ~ \.php$ {
           root /var/www/{{ server_name }}/wordpress;
@@ -73,12 +66,11 @@ nginx_vhosts:
           fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
           include fastcgi_params;
       }
+      ssl_certificate {{ cert_path }};
+      ssl_certificate_key {{ key_path }};
+
 
 #
-      # ssl_certificate {{ cert_path }};
-      # ssl_certificate_key {{ key_path }};
-
-
       # ssl_certificate     /etc/ssl/certs/ssl-cert-snakeoil.pem;
       # ssl_certificate_key /etc/ssl/private/ssl-cert-snakeoil.key;
       # ssl_protocols       TLSv1.1 TLSv1.2;

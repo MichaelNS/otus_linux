@@ -15,23 +15,9 @@
 
 
 
-
-# todo - replace
-- name: WEB SERVER | COPY SITE NGINX CONFIG
-  copy:
-    src: files/site.project.conf
-    dest: /etc/nginx/conf.d/
-
 # todo - move
 # - name: WEB SERVER | CONFIGURE SELINUX FOR NGINX
 #   shell: semanage fcontext -a -t httpd_sys_rw_content_t /var/www/site.project/logs/access.log ; restorecon -v /var/www/site.project/logs/access.log ; semanage fcontext -a -t httpd_sys_rw_content_t /var/www/site.project/logs/error.log ; restorecon -v /var/www/site.project/logs/error.log
-
-# todo - move
-- name: WEB SERVER | RESTART NGINX
-  systemd:
-    name: nginx
-    state: restarted
-
 
 
 
@@ -54,14 +40,6 @@
     group: www-data
   when:
     - ansible_os_family == "Debian"
-
-# todo - ???
-- name: Set permissions for directories
-  shell: "/usr/bin/find /var/www/{{ server_name }}/wordpress/ -type d -exec chmod 750 {} \\;"
-
-# todo - ???
-- name: Set permissions for files
-  shell: "/usr/bin/find /var/www/{{ server_name }}/wordpress/ -type f -exec chmod 640 {} \\;"
 
 
 
