@@ -1,4 +1,15 @@
 ---
+- name: Configure Backup-server
+  hosts: backupsServer
+  remote_user: vagrant
+  become: true
+  roles:
+    - common
+    - borgbackup-server
+    - rsyslog-server
+  tags:
+    - backup
+
 - name: Configure router
   hosts: inetRouter
   remote_user: vagrant
@@ -6,8 +17,7 @@
   roles:
     - common
     - inetRouter
-    # - rsyslog-client
-    # - zabbix-agent
+    - rsyslog-client
   tags:
     - routers
 
@@ -17,7 +27,6 @@
   become: true
   roles:
     - role: common
-    # - chusiang.php7
     - role: nginx-cert
 
     - role: geerlingguy.nginx
@@ -28,7 +37,10 @@
 
     - role: wordpress
       tags: mysql
-    # - rsyslog-client
+
+    - role: rsyslog-client
+    - role: rsyslog-nginx
+    - role: rsyslog-php-fpm
   tags:
     - web
 
@@ -40,5 +52,18 @@
     - role: common
 
     - role: mysql
+
+    - role: rsyslog-client
   tags:
     - mysql
+
+# - name: Configure Backup-server
+#   hosts: backupsServer
+#   remote_user: vagrant
+#   become: true
+#   roles:
+#     - common
+#     - borgbackup-server
+#     - rsyslog-server
+#   tags:
+#     - backup

@@ -15,21 +15,24 @@ MACHINES = {
   },
   :mysqlServer => {
     :box_name => "centos/7",
+    :vm_name => "mysqlServer",
     :net => [
       {ip: '192.168.30.3', adapter: 2, netmask: "255.255.255.0", virtualbox__intnet: "intranet"},
     ]
   },
   :wordpressServer => {
     :box_name => "centos/7",
+    :vm_name => "wordpressServer",
     :net => [
       {ip: '192.168.30.2', adapter: 2, netmask: "255.255.255.0", virtualbox__intnet: "intranet"},
     ]
-  # },
-  # :backupsServer => {
-  #   :box_name => "centos/7",
-  #   :net => [
-  #     {ip: '192.168.30.5', adapter: 2, netmask: "255.255.255.0", virtualbox__intnet: "intranet"},
-  #   ]
+  },
+  :backupsServer => {
+    :box_name => "centos/7",
+    :vm_name => "backupsServer",
+    :net => [
+      {ip: '192.168.30.5', adapter: 2, netmask: "255.255.255.0", virtualbox__intnet: "intranet"},
+    ]
   # },
   # :zabbixServer => {
   #   :box_name => "centos/8",

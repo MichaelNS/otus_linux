@@ -17,6 +17,13 @@ wp_db_user: wordpress
 wp_db_password: secret
 wp_home_dir: /var/www/{{ server_name }}/wordpress
 
+borg_ssh_user: vagrant
+borg_server_ip: 192.168.30.5
+borg_passphare: otus
+borg_client_key_path: /root/.ssh/borg
+server_backup_dir_mysql: /backups/mysql
+server_backup_dir_wordpress: /backups/wordpress
+rsyslog_server_ip: 192.168.30.5
 
 
 key_path: /etc/pki/tls/private/nginx-selfsigned.key
@@ -31,11 +38,14 @@ nginx_vhosts:
     # server_name_redirect: "www.{{ server_name }}"
     root: "/var/www/{{ server_name }}/wordpress"
     access_log: "/var/log/nginx/{{ server_name }}.access.log  main"
-    error_log: "/var/log/nginx/{{ server_name }}.error_log"
+    error_log: "/var/log/nginx/{{ server_name }}.error.log"
     state: "present"
     template: "{{ nginx_vhost_template }}"
     filename: "{{ server_name }}.conf"
     extra_parameters: |
+      error_log syslog:server={{ rsyslog_server_ip }}:514,tag=nginx_error;
+      access_log syslog:server={{ rsyslog_server_ip }}:514,tag=nginx_access,severity=info combined;
+
       location / {
           root /var/www/{{ server_name }}/wordpress;
           index index.php;

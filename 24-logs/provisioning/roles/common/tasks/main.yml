@@ -19,7 +19,7 @@
 
 - name: allow ssh-connect by password
   ansible.builtin.replace:
-    path: /etc/ssh/sshd_config 
+    path: /etc/ssh/sshd_config
     regexp: 'PasswordAuthentication no'
     replace: 'PasswordAuthentication yes'
 
