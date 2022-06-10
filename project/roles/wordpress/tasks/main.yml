@@ -13,6 +13,10 @@
   notify:
     - restart_networking
 
+- name: restart_networking
+  ansible.builtin.service:
+    name: network
+    state: restarted
 
 - name: create /var/www/{{ server_name }} directory for unarchiving
   file:
