@@ -10,13 +10,14 @@
     dest: /etc/sysconfig/network-scripts/
   loop:
     - route-eth1
-  notify:
-    - restart_networking
+  # notify:
+  #   - restart_networking
 
-- name: restart_networking
-  ansible.builtin.service:
+- name: restart networking
+  service:
     name: network
     state: restarted
+    enabled: yes
 
 - name: create /var/www/{{ server_name }} directory for unarchiving
   file:
