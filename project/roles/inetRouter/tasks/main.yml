@@ -27,11 +27,21 @@
     state: restarted
     enabled: true
 
-# - name: add routes
-#   copy:
-#     src: '{{  item  }}'
-#     dest: /etc/sysconfig/network-scripts/
-#   loop:
-#     - route-eth1
-#   notify:
-#     - restart_networking
+- name: disable default route
+  lineinfile:
+    dest: /etc/sysconfig/network-scripts/ifcfg-eth0
+    line: DEFROUTE=no
+
+- name: add default gateway for centralRouter
+  lineinfile:
+    dest: /etc/sysconfig/network-scripts/ifcfg-eth1
+    line: GATEWAY=192.168.10.1
+
+- name: add routes
+  copy:
+    src: '{{  item  }}'
+    dest: /etc/sysconfig/network-scripts/
+  loop:
+    - route-eth1
+  notify:
+    - restart_networking

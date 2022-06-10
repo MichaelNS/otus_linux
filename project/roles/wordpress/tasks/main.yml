@@ -1,4 +1,19 @@
 ---
+- name: add default gateway for centralRouter
+  lineinfile:
+    dest: /etc/sysconfig/network-scripts/ifcfg-eth1
+    line: GATEWAY=192.168.30.1
+
+- name: add routes
+  template:
+    src: '{{  item  }}'
+    dest: /etc/sysconfig/network-scripts/
+  loop:
+    - route-eth1
+  notify:
+    - restart_networking
+
+
 - name: create /var/www/{{ server_name }} directory for unarchiving
   file:
     path: /var/www/{{ server_name }}

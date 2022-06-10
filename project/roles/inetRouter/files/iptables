@@ -23,8 +23,11 @@ COMMIT
 -A PREROUTING -i eth1 -p tcp -m tcp --dport 443 -j DNAT --to-destination 192.168.30.2:443
 
 ### Маскарад лучше использовать с указанием интерфейса
-#-A POSTROUTING ! -d 192.168.0.0/16 -o eth0 -j MASQUERADE
--A POSTROUTING -j MASQUERADE
+-A POSTROUTING ! -d 192.168.0.0/16 -o eth0 -j MASQUERADE
+#-A POSTROUTING -o eth0 -j MASQUERADE
+#-A POSTROUTING -s 192.168.0.0/16 -o wan -j MASQUERADE
+#-A POSTROUTING -s 192.168.0.0/16 -o eth0 -j MASQUERADE
+#-A POSTROUTING -j MASQUERADE
 
 COMMIT
 # Completed on Mon Jan 17 09:53:32 2022
