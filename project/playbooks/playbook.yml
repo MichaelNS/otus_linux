@@ -1,4 +1,14 @@
 ---
+- name: Configure Monitor-server
+  hosts: monitorServer
+  remote_user: vagrant
+  become: true
+  roles:
+    - common
+    - monitor-server
+  tags:
+    - monitor
+
 - name: Configure Backup-server
   hosts: backupsServer
   remote_user: vagrant
@@ -7,6 +17,7 @@
     - common
     - borgbackup-server
     - rsyslog-server
+    - monitor-client
   tags:
     - backup
 
@@ -18,6 +29,7 @@
     - common
     - inetRouter
     - rsyslog-client
+    - monitor-client
   tags:
     - routers
 
@@ -41,6 +53,8 @@
     - role: rsyslog-client
     - role: rsyslog-nginx
     - role: rsyslog-php-fpm
+
+    - role: monitor-client
   tags:
     - web
 
@@ -54,16 +68,8 @@
     - role: mysql
 
     - role: rsyslog-client
+
+    - role: monitor-client
   tags:
     - mysql
 
-# - name: Configure Backup-server
-#   hosts: backupsServer
-#   remote_user: vagrant
-#   become: true
-#   roles:
-#     - common
-#     - borgbackup-server
-#     - rsyslog-server
-#   tags:
-#     - backup

@@ -21,6 +21,7 @@ COMMIT
 :POSTROUTING ACCEPT [0:0]
 -A PREROUTING -i eth1 -p tcp -m tcp --dport 80 -j DNAT --to-destination 192.168.30.2:80
 -A PREROUTING -i eth1 -p tcp -m tcp --dport 443 -j DNAT --to-destination 192.168.30.2:443
+-A PREROUTING -i eth1 -p tcp -m tcp --dport 9100 -j DNAT --to-destination 192.168.30.4:9100
 
 ### Маскарад лучше использовать с указанием интерфейса
 -A POSTROUTING ! -d 192.168.0.0/16 -o eth0 -j MASQUERADE
