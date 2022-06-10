@@ -6,10 +6,11 @@
 #     state: present
 #     reload: yes
 
-- name: install epel
+- name: Install epel
   yum:
-    name:
-      - epel-release
+    name: epel-release
+    state: present
+  when: ansible_os_family == "RedHat"
 
 - name: Install utility on RedHat OS
   yum:
@@ -39,6 +40,7 @@
   selinux:
     policy: targeted
     state: permissive
+  when: ansible_os_family == "RedHat"
 
 # - name: firewalld disable
 #   service:
