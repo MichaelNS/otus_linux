@@ -1,0 +1,23 @@
+---
+- name: Install MySQL
+  yum:
+    name: mariadb-server-5.5.68-1.el7
+    state: present
+
+
+- name: Start MySQL Service
+  ansible.builtin.systemd:
+    state: started
+    enabled: yes
+    name: mariadb
+
+
+- name: Install Mysql python for ansible
+  yum:
+    name: MySQL-python
+    state: installed
+  notify: Set MySQL root Password
+
+
+- name: Flush handlers
+  meta: flush_handlers

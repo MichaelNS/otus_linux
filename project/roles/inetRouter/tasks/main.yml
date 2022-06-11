@@ -1,0 +1,47 @@
+---
+- name: install iptables service
+  yum:
+    name:
+      - iptables
+      - iptables-services
+    state: present
+    update_cache: true
+
+- name: set up forward packages across routers
+  sysctl:
+    name: net.ipv4.conf.all.forwarding
+    value: '1'
+    state: present
+
+- name: copy iptables config
+  copy:
+    src: iptables
+    dest: /etc/sysconfig/iptables
+    owner: root
+    group: root
+    mode: 0600
+
+- name: start and enable iptables service
+  service:
+    name: iptables
+    state: restarted
+    enabled: true
+
+- name: disable default route
+  lineinfile:
+    dest: /etc/sysconfig/network-scripts/ifcfg-eth0
+    line: DEFROUTE=no
+
+- name: add default gateway for centralRouter
+  lineinfile:
+    dest: /etc/sysconfig/network-scripts/ifcfg-eth1
+    line: GATEWAY=192.168.10.1
+
+- name: add routes
+  copy:
+    src: '{{  item  }}'
+    dest: /etc/sysconfig/network-scripts/
+  loop:
+    - route-eth1
+  notify:
+    - restart_networking
