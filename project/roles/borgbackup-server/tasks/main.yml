@@ -4,43 +4,28 @@
     name: borgbackup
     state: present
 
+- name: add user borg
+  user:
+    name: "{{  borg_user  }}"
+    state: present
+    password: "{{ borg_user_pass | password_hash('sha512') }}"
+    shell: /bin/bash
 
-- name: Create directory for backups
+- name: create /home/{{ borg_user }}/.ssh dir
   file:
-    path: /backups
+    path:  /home/{{ borg_user }}/.ssh
     state: directory
-    owner: vagrant
-    group: vagrant
-    mode: '0755'
+    owner: "{{ borg_user }}"
+    group: "{{ borg_user }}"
+    mode: 0700
 
-
-- name: Create directory for mysql backups
+- name: create authorized_keys
   file:
-    path: "{{ server_backup_dir_mysql }}"
-    state: directory
-    owner: vagrant
-    group: vagrant
-    mode: '0755'
+    path: /home/{{ borg_user }}/.ssh/authorized_keys
+    state: touch
+    owner: "{{ borg_user }}"
+    group: "{{ borg_user }}"
+    mode: 0600
 
-
-- name: Create directory for wordpress backups
-  file:
-    path: "{{ server_backup_dir_wordpress }}"
-    state: directory
-    owner: vagrant
-    group: vagrant
-    mode: '0755'
-
-
-- name: Init borg repository for mysql
-  become_user: vagrant
-  shell: >
-    BORG_PASSPHRASE="otus" borg init --encryption=repokey /backups/mysql
-  ignore_errors: true
-
-
-- name: Init borg repository for wordpress
-  become_user: vagrant
-  shell: >
-    BORG_PASSPHRASE="otus" borg init --encryption=repokey /backups/wordpress
-  ignore_errors: true
+- name: Create Filesystem for additional disks
+  import_tasks: create_disk.yml
