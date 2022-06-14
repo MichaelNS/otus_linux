@@ -1,3 +1,4 @@
+# VAGRANT_EXPERIMENTAL="disks"
 # -*- mode: ruby -*-
 # vim: set ft=ruby :
 
@@ -53,7 +54,12 @@ Vagrant.configure("2") do |config|
         box.vm.network "forwarded_port", guest: 3000, host: 3000
       end
 
-     boxconfig[:net].each do |ipconf|
+      if boxconfig[:vm_name] == "backupsServer"
+        box.vm.disk :disk, size: '300MB', name: "borg"
+        # box.vm.disk :disk, size: '2GB', name: "borg"
+      end
+
+      boxconfig[:net].each do |ipconf|
         box.vm.network "private_network", ipconf
       end
       if boxconfig.key?(:public)

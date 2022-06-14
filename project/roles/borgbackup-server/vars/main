@@ -1,0 +1,4 @@
+xfs_opts: defaults,auto,noatime,noexec
+
+data_disk: /dev/sdb
+data_path: /var/backup

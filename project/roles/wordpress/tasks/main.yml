@@ -123,5 +123,3 @@
   tags:
   - skip_ansible_lint
 
-- include_tasks: setup-borgbackup-client.yml
-

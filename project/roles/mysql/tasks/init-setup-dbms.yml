@@ -4,6 +4,12 @@
     name: mariadb-server-5.5.68-1.el7
     state: present
 
+# - name: MYSQL SERVER | INSTALL PERCONA MYSQL+XTRABACKUP
+#   yum:
+#     name:
+#       # - Percona-Server-server-57
+#       - percona-xtrabackup-24
+#     state: present
 
 - name: Start MySQL Service
   ansible.builtin.systemd:
