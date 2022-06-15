@@ -39,6 +39,7 @@
       - traceroute
       - net-tools
       - nano
+      # - setroubleshoot
     state: present
     update_cache: yes
   when: ansible_os_family == "RedHat"
@@ -55,12 +56,12 @@
     state: restarted
 
 
-# TODO disable
-- name: put SELinux in permissive mode
-  selinux:
-    policy: targeted
-    state: permissive
-  when: ansible_os_family == "RedHat"
+
+# - name: put SELinux in permissive mode
+#   selinux:
+#     policy: targeted
+#     state: permissive
+#   when: ansible_os_family == "RedHat"
 
 # - name: firewalld disable
 #   service:
