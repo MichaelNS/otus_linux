@@ -99,6 +99,21 @@ cat ~/.ssh/vagrant-key.pub > ./files/authorized_keys
 
 
 # Проверка
+## Prometheus
+http://localhost:9090/targets
+http://localhost:9100/metrics
+
+
+## Grafana
+http://localhost:3000/
+
+
+## Wordpress
+
+https://192.168.10.10/
+
+
+
 
 ## Проверка бэкапов
 ### Проверяем работу сервиса бэкапов
