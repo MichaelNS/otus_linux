@@ -195,3 +195,12 @@ nginx -t && nginx -s reload
 https://docs.nginx.com/nginx/admin-guide/dynamic-modules/brotli/
 
 ```
+
+## WordPress
+
+./roles/wordpress/templates/wp-config.php.j2
+
+/* Add any custom values between this line and the "stop editing" line. */
+define( 'WP_DEBUG', true );
+define( 'WP_DEBUG_DISPLAY', false );
+define( 'WP_DEBUG_LOG', true );
