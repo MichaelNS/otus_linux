@@ -160,3 +160,17 @@ borg extract borg@192.168.30.5:/var/backup/::2022-06-14-19-00 var/lib/mysql/back
 ```bash
 mysql -u root -p < var/lib/mysql/backup/all_databases.sql
 ```
+
+
+## nginx
+```bash
+less /etc/nginx/nginx.conf
+
+less /etc/nginx/conf.d/site.project.conf
+
+nginx -t && nginx -s reload
+
+
+https://docs.nginx.com/nginx/admin-guide/dynamic-modules/brotli/
+
+```
