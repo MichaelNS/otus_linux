@@ -1,21 +1,58 @@
 ---
+# dnf install -y curl wget vim git unzip socat bash-completion epel-release socat && sudo dnf groupinstall "Development Tools"
+# dnf install network-scripts
+
+- name: Distribution
+  debug: msg="{{ ansible_distribution }}"
+- name: Distribution version
+  debug: msg="{{ ansible_distribution_version}}"
+- name: Distribution major version
+  debug: msg="{{ ansible_distribution_major_version }}"
+
+- name: install utils
+  dnf:
+    name:
+      # - "@development-tools"
+      - curl
+      - wget
+      - vim
+      - git
+      - unzip
+      - socat
+      - bash-completion
+    state: present
+  when:
+    - ansible_distribution == 'AlmaLinux'
+    - ansible_distribution_major_version | int >= 8
+
+
+- name: disable default route
+  lineinfile:
+    dest: /etc/sysconfig/network-scripts/ifcfg-enp0s3
+    line: DEFROUTE=no
+
 - name: add default gateway for centralRouter
   lineinfile:
-    dest: /etc/sysconfig/network-scripts/ifcfg-eth1
+    dest: /etc/sysconfig/network-scripts/ifcfg-enp0s8
     line: GATEWAY=192.168.30.1
+
+- name: add default gateway
+  shell: route add default gw 192.168.30.1
+  ignore_errors: true
+
 
 - name: add routes
   template:
     src: '{{  item  }}'
     dest: /etc/sysconfig/network-scripts/
   loop:
-    - route-eth1
+    - route-enp0s8
   # notify:
   #   - restart_networking
 
 - name: restart networking
   service:
-    name: network
+    name: NetworkManager.service
     state: restarted
     enabled: yes
 
@@ -70,6 +107,20 @@
 
 - name: install SEManage
   yum: pkg=policycoreutils-python state=present
+  when:
+    - ansible_os_family == 'CentOS'
+    - ansible_distribution_major_version | int <= 7
+
+- name: install SEManage 2
+  yum:
+    name:
+      - policycoreutils-python-utils
+      - setools-console
+      - setroubleshoot-server
+    state: present
+  when:
+    - ansible_os_family == 'AlmaLinux'
+    - ansible_distribution_major_version | int >= 8
 
 - name: set the SELinux policy for the Wordpress directory
   command: semanage fcontext -a -t httpd_sys_content_t "{{ wp_home_dir }}/wordpress(/.*)?"
