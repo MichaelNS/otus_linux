@@ -16,3 +16,5 @@ ansible-playbook site.yml -i .vagrant/provisioners/ansible/inventory/vagrant_ans
 # ansible-playbook site.yml -i .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory -t web --skip-tags skip_ansible_lint
 # ansible-playbook site.yml -i .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory -t web --start-at-task="Distribution" --skip-tags skip_ansible_lint
 # ansible-playbook site.yml -i .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory -t routers,web --skip-tags skip_ansible_lint
+
+# ansible-playbook site.yml -i .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory -t routers --start-at-task="copy iptables config"
