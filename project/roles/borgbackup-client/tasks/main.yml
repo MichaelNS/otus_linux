@@ -33,12 +33,23 @@
     path: /root/.ssh/id_rsa
 
 
+- name: "Set variables"
+  set_fact:
+    qwe_ans: "borg@{{ borg_server_ip }}'s password:"
+
+- debug:
+    msg: "ans '{{ qwe_ans }}'"
+
+# todo - add template
 - name: copy public key to backup:/home/{{ borg_user }}/.ssh/authorized_keys
   expect:
     command: scp -o "StrictHostKeyChecking=no" /root/.ssh/id_rsa.pub {{ borg_user }}@{{ borg_server_ip }}:/home/{{ borg_user }}/.ssh/authorized_keys
+    echo: true
+    timeout: 5
     responses:
       Are you sure you want to continue connecting (yes/no)?: "yes"
-      borg@{{ borg_server_ip }}'s password: "{{ borg_user_pass }}"
+      borg@192.168.30.5's password: "{{ borg_user_pass }}"
+      # "'{{ qwe_ans }}'": "{{ borg_user_pass }}"
 
 # debug
 - name: get the username running the deploy
