@@ -35,6 +35,8 @@ cert_path: /etc/pki/tls/certs/nginx-selfsigned.crt
 
 # nginx_user: root
 
+nginx_conf_template: "{{ playbook_dir }}/templates/nginx.conf.j2"
+
 nginx_vhosts:
   - listen: "443 ssl http2"
     server_name: "{{ server_name }}"
@@ -82,6 +84,8 @@ nginx_vhosts:
       }
       ssl_certificate {{ cert_path }};
       ssl_certificate_key {{ key_path }};
+
+      # brotli on;
 
 
 #
