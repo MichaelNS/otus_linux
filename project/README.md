@@ -176,6 +176,12 @@ borg extract borg@192.168.30.5:/var/backup/::2022-06-14-19-00 var/lib/mysql/back
 mysql -u root -p < var/lib/mysql/backup/all_databases.sql
 ```
 
+## Логи
+
+```bash
+cd /var/log/rsyslog/
+```
+
 
 ## nginx
 ```bash
