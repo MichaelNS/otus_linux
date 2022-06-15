@@ -20,7 +20,7 @@ MACHINES = {
     ]
   },
   :wordpressServer => {
-    :box_name => "centos/7",
+    :box_name => "almalinux/8",
     :vm_name => "wordpressServer",
     :net => [
       {ip: '192.168.30.2', adapter: 2, netmask: "255.255.255.0", virtualbox__intnet: "intranet"},

@@ -127,6 +127,6 @@ php_packages:
   - php-soap
   - php-intl
   - php-zip
-  - php-mysql
+  - php-mysqlnd
 php_fpm_pool_user: nginx
 php_fpm_pool_group: nginx
