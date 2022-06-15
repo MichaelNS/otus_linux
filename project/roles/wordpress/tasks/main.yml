@@ -22,7 +22,7 @@
       - bash-completion
     state: present
   when:
-    - ansible_distribution == 'AlmaLinux'
+    - ansible_os_family == 'RedHat'
     - ansible_distribution_major_version | int >= 8
 
 # nmcli connection down enp0s3 && nmcli connection up enp0s3
@@ -123,58 +123,58 @@
       - setroubleshoot-server
     state: present
   when:
-    - ansible_os_family == 'AlmaLinux'
+    - ansible_os_family == 'RedHat'
     - ansible_distribution_major_version | int >= 8
 
 - name: set the SELinux policy for the Wordpress directory
   command: semanage fcontext -a -t httpd_sys_content_t "{{ wp_home_dir }}/wordpress(/.*)?"
   tags:
-  - skip_ansible_lint
+  - skip_wp_semanage
 
 - name: set the SELinux policy for wp-config.php
   command: semanage fcontext -a -t httpd_sys_script_exec_t "{{ wp_home_dir }}/wp-config\.php"
   tags:
-  - skip_ansible_lint
+  - skip_wp_semanage
 
 - name: set the SELinux policy for wp-content directory
   command: semanage fcontext -a -t httpd_sys_rw_content_t "{{ wp_home_dir }}/wp-content(/.*)?"
   tags:
-  - skip_ansible_lint
+  - skip_wp_semanage
 
 - name: set the SELinux policy for the *.php files
   command: semanage fcontext -a -t httpd_sys_script_exec_t "{{ wp_home_dir }}/wordpress/.*\.php"
   tags:
-  - skip_ansible_lint
+  - skip_wp_semanage
 
 - name: set the SELinux policy for the Upgrade directory
   command: semanage fcontext -a -t httpd_sys_rw_content_t "{{ wp_home_dir }}/wp-content/upgrade(/.*)?"
   tags:
-  - skip_ansible_lint
+  - skip_wp_semanage
 
 - name: set the SELinux policy for the Uploads directory
   command: semanage fcontext -a -t httpd_sys_rw_content_t "{{ wp_home_dir }}/wp-content/uploads(/.*)?"
   tags:
-  - skip_ansible_lint
+  - skip_wp_semanage
 
 - name: set the SELinux policy for the wp-includes php files
   command: semanage fcontext -a -t httpd_sys_script_exec_t "{{ wp_home_dir }}/wp-includes/.*\.php"
   tags:
-  - skip_ansible_lint
+  - skip_wp_semanage
 
 - name: set the SELinux on all the Files
   command: restorecon -Rv {{ wp_home_dir }}
 #  command: restorecon -RF /srv/wordpress
   tags:
-  - skip_ansible_lint
+  - skip_wp_semanage
 
 - name: set the SELinux bool to allow connection to db
   command: setsebool -P httpd_can_network_connect_db 1
   tags:
-  - skip_ansible_lint
+  - skip_wp_semanage
 
 - name: Start php-fpm Service
   service: name=php-fpm state=started enabled=yes
   ignore_errors: true
   tags:
-  - skip_ansible_lint
+  - skip_wp_semanage
 
