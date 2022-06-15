@@ -25,6 +25,10 @@
     - ansible_distribution == 'AlmaLinux'
     - ansible_distribution_major_version | int >= 8
 
+# nmcli connection down enp0s3 && nmcli connection up enp0s3
+- name: restart enp0s3
+  shell: nmcli connection down enp0s3 && nmcli connection up enp0s3
+  ignore_errors: true
 
 - name: disable default route
   lineinfile:
