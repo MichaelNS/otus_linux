@@ -9,6 +9,7 @@
 - name: Distribution major version
   debug: msg="{{ ansible_distribution_major_version }}"
 
+# for compile Brotli
 - name: install utils
   dnf:
     name:
@@ -20,6 +21,15 @@
       - unzip
       - socat
       - bash-completion
+      - yum-utils
+      - pcre
+      - pcre-devel
+      - zlib
+      - zlib-devel
+      - openssl
+      - openssl-devel
+      - gcc
+      - cmake
     state: present
   when:
     - ansible_os_family == 'RedHat'
@@ -74,9 +84,7 @@
 
 
 
-# todo - move
-# - name: WEB SERVER | CONFIGURE SELINUX FOR NGINX
-#   shell: semanage fcontext -a -t httpd_sys_rw_content_t /var/www/site.project/logs/access.log ; restorecon -v /var/www/site.project/logs/access.log ; semanage fcontext -a -t httpd_sys_rw_content_t /var/www/site.project/logs/error.log ; restorecon -v /var/www/site.project/logs/error.log
+
 
 
 
@@ -177,4 +185,80 @@
   ignore_errors: true
   tags:
   - skip_wp_semanage
+
+
+
+
+
+
+- name: WEB SERVER | CONFIGURE SELINUX FOR NGINX error.log
+  shell: semanage fcontext -a -t httpd_sys_rw_content_t /var/log/nginx/error.log ; restorecon -v /var/log/nginx/error.log
+  tags:
+  - skip_wp_semanage
+
+- name: WEB SERVER | CONFIGURE SELINUX FOR NGINX site.project.error.log
+  shell: semanage fcontext -a -t httpd_sys_rw_content_t /var/log/nginx/site.project.error.log ; restorecon -v /var/log/nginx/site.project.error.log
+  tags:
+  - skip_wp_semanage
+
+
+- name: WEB SERVER | CONFIGURE SELINUX FOR NGINX access.log
+  shell: semanage fcontext -a -t httpd_sys_rw_content_t /var/log/nginx/access.log ; restorecon -v /var/log/nginx/access.log
+  tags:
+  - skip_wp_semanage
+
+- name: WEB SERVER | CONFIGURE SELINUX FOR NGINX site.project.access.log
+  shell: semanage fcontext -a -t httpd_sys_rw_content_t /var/log/nginx/site.project.access.log ; restorecon -v /var/log/nginx/site.project.access.log
+  tags:
+  - skip_wp_semanage
+
+
+
+
+
+- name: set the SELinux bool to allow 2 httpd_execmem
+  command: setsebool -P httpd_execmem 1
+  tags:
+  - skip_wp_semanage
+
+
+- name: set the SELinux bool to allow 2 httpd_can_network_connect
+  command: setsebool -P httpd_can_network_connect 1
+  tags:
+  - skip_wp_semanage
+
+
+- name: set the SELinux bool to allow 2 httpd_graceful_shutdown
+  command: setsebool -P httpd_graceful_shutdown 1
+  tags:
+  - skip_wp_semanage
+
+
+
+- name: set the SELinux bool to allow 2 httpd_can_network_relay
+  command: setsebool -P httpd_can_network_relay 1
+  tags:
+  - skip_wp_semanage
+
+
+
+- name: set the SELinux bool to allow 2 nis_enabled
+  command: setsebool -P nis_enabled 1
+  tags:
+  - skip_wp_semanage
+
+
+- name: set the SELinux bool to allow 2 httpd_unified
+  command: setsebool -P httpd_unified 1
+  tags:
+  - skip_wp_semanage
+
+
+
+
+# /var/log/php-fpm/error.log
+# - name: WEB SERVER | CONFIGURE SELINUX FOR NGINX site.project.access.log
+#   shell: semanage fcontext -a -t httpd_sys_rw_content_t /var/log/nginx/site.project.access.log ; restorecon -v /var/log/nginx/site.project.access.log
+#   tags:
+#   - skip_wp_semanage
 

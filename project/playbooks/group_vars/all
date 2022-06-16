@@ -128,5 +128,6 @@ php_packages:
   - php-intl
   - php-zip
   - php-mysqlnd
+  - php-opcache
 php_fpm_pool_user: nginx
 php_fpm_pool_group: nginx

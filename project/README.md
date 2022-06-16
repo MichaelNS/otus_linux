@@ -176,6 +176,12 @@ borg extract borg@192.168.30.5:/var/backup/::2022-06-14-19-00 var/lib/mysql/back
 mysql -u root -p < var/lib/mysql/backup/all_databases.sql
 ```
 
+## Логи
+
+```bash
+cd /var/log/rsyslog/
+```
+
 
 ## nginx
 ```bash
@@ -189,3 +195,12 @@ nginx -t && nginx -s reload
 https://docs.nginx.com/nginx/admin-guide/dynamic-modules/brotli/
 
 ```
+
+## WordPress
+
+./roles/wordpress/templates/wp-config.php.j2
+
+/* Add any custom values between this line and the "stop editing" line. */
+define( 'WP_DEBUG', true );
+define( 'WP_DEBUG_DISPLAY', false );
+define( 'WP_DEBUG_LOG', true );
