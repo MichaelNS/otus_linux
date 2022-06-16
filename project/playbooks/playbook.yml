@@ -19,7 +19,7 @@
     - common
     - borgbackup-server
     - rsyslog-server
-    - monitor-client
+    - geerlingguy.node_exporter
   tags:
     - backup
 
@@ -32,7 +32,7 @@
     - common
     - inetRouter
     - rsyslog-client
-    - monitor-client
+    - geerlingguy.node_exporter
   tags:
     - routers
 
@@ -58,7 +58,7 @@
     - role: rsyslog-nginx
     - role: rsyslog-php-fpm
 
-    - role: monitor-client
+    - role: geerlingguy.node_exporter
   tags:
     - web
 
@@ -74,7 +74,7 @@
 
     - role: rsyslog-client
 
-    - role: monitor-client
+    - role: geerlingguy.node_exporter
 
     - role: borgbackup-client
   tags:
