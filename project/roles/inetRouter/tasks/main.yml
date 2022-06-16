@@ -1,11 +1,11 @@
 ---
-- name: install iptables service
-  yum:
-    name:
-      - iptables
-      - iptables-services
-    state: present
-    update_cache: true
+# - name: install iptables service
+#   yum:
+#     name:
+#       - iptables
+#       - iptables-services
+#     state: present
+#     update_cache: true
 
 - name: set up forward packages across routers
   sysctl:
@@ -13,19 +13,19 @@
     value: '1'
     state: present
 
-- name: copy iptables config
-  copy:
-    src: iptables
-    dest: /etc/sysconfig/iptables
-    owner: root
-    group: root
-    mode: 0600
+# - name: copy iptables config
+#   copy:
+#     src: iptables
+#     dest: /etc/sysconfig/iptables
+#     owner: root
+#     group: root
+#     mode: 0600
 
-- name: start and enable iptables service
-  service:
-    name: iptables
-    state: restarted
-    enabled: true
+# - name: start and enable iptables service
+#   service:
+#     name: iptables
+#     state: restarted
+#     enabled: true
 
 - name: disable default route
   lineinfile:

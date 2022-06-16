@@ -10,3 +10,6 @@
 
 - src: geerlingguy.node_exporter
   version: 1.0.2
+
+- src: geerlingguy.firewall
+  version: 2.5.0

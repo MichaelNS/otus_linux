@@ -30,6 +30,7 @@
   roles:
     - geerlingguy.repo-epel
     - common
+    - geerlingguy.firewall
     - inetRouter
     - rsyslog-client
     - geerlingguy.node_exporter
