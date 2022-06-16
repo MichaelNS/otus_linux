@@ -1,3 +1,17 @@
+firewall_allowed_tcp_ports:
+  - "22"
+  - "443"
+  - "9100"
+
+firewall_additional_rules:
+  - "iptables -A INPUT -m conntrack --ctstate INVALID -j DROP"
+  - "iptables -t nat -A PREROUTING -i eth1 -p tcp -m tcp --dport 80 -j DNAT --to-destination 192.168.30.2:80"
+  - "iptables -t nat -A PREROUTING -i eth1 -p tcp -m tcp --dport 443 -j DNAT --to-destination 192.168.30.2:443"
+  - "iptables -t nat -A PREROUTING -i eth1 -p tcp -m tcp --dport 9100 -j DNAT --to-destination 192.168.30.2:9100"
+  - "iptables -t nat -A POSTROUTING ! -d 192.168.0.0/16 -o eth0 -j MASQUERADE"
+
+
+
 # server_name: "example.com"
 server_name: "site.project"
 
