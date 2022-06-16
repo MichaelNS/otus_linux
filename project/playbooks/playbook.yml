@@ -4,6 +4,7 @@
   remote_user: vagrant
   become: true
   roles:
+    - geerlingguy.repo-epel
     - common
     - monitor-server
   tags:
@@ -14,6 +15,7 @@
   remote_user: vagrant
   become: true
   roles:
+    - geerlingguy.repo-epel
     - common
     - borgbackup-server
     - rsyslog-server
@@ -26,6 +28,7 @@
   remote_user: vagrant
   become: true
   roles:
+    - geerlingguy.repo-epel
     - common
     - inetRouter
     - rsyslog-client
@@ -38,6 +41,7 @@
   remote_user: vagrant
   become: true
   roles:
+    - role: geerlingguy.repo-epel
     - role: common
     - role: nginx-cert
 
@@ -63,6 +67,7 @@
   remote_user: vagrant
   become: true
   roles:
+    - role: geerlingguy.repo-epel
     - role: common
 
     - role: mysql

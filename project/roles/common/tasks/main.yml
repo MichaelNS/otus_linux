@@ -1,9 +1,9 @@
 ---
-- name: Install epel
-  yum:
-    name: epel-release
-    state: present
-  when: ansible_os_family == "RedHat"
+# - name: Install epel
+#   yum:
+#     name: epel-release
+#     state: present
+#   when: ansible_os_family == "RedHat"
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=1993287
 # https://docs.fedoraproject.org/en-US/epel/#Quickstart
