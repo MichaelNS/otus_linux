@@ -47,6 +47,10 @@ key_path: /etc/pki/tls/private/nginx-selfsigned.key
 cert_path: /etc/pki/tls/certs/nginx-selfsigned.crt
 
 
+
+nginx_yum_ver: "1.20"
+nginx_ver_full: "1.20.1"
+
 # nginx_user: root
 
 nginx_conf_template: "{{ playbook_dir }}/templates/nginx.conf.j2"
@@ -100,6 +104,8 @@ nginx_vhosts:
       ssl_certificate_key {{ key_path }};
 
       # brotli on;
+      # brotli_static on;
+      # brotli_types text/plain text/css text/javascript application/javascript text/xml application/xml image/svg+xml application/json;
 
 
 #
