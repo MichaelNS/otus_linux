@@ -1,0 +1,54 @@
+# -*- mode: ruby -*-
+# vim: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "centos/7"
+
+  config.vm.provider "virtualbox" do |v|
+    v.memory = 256
+  end
+
+  config.vm.define "ipaserver" do |ipaserver|
+    ipaserver.vm.network "private_network", ip: "192.168.50.10", mask: "255.255.255.0"
+    ipaserver.vm.hostname = "ipaserver"
+    ipaserver.vm.provider :virtualbox do |vb|
+      vb.memory = 2048
+      vb.cpus = 2
+      # vb.cpus = 5
+    end
+  end
+
+  config.vm.define "ipaclient" do |ipaclient|
+    ipaclient.vm.network "private_network", ip: "192.168.50.20", mask: "255.255.255.0"
+    ipaclient.vm.hostname = "ipaclient"
+
+    # ipaclient.vm.provider :virtualbox do |vb|
+    #   vb.memory = 1024
+    #   vb.cpus = 5
+    # end
+  end
+
+  config.vm.provision "file", source: "files/authorized_keys", destination: "~/authorized_keys"
+  config.vm.provision "shell", path: "./files/bootstrap.sh"
+  config.vm.provision :ansible do |ansible|
+    # ansible.verbose = 'vvvv'
+    # https://martincarstenbach.wordpress.com/2019/04/11/ansible-tipsntricks-provision-multiple-machines-in-parallel-with-vagrant-and-ansible/
+
+    # Disable default limit to connect to all the machines
+    ansible.limit = "all"
+    ansible.playbook = 'provisioning/check.yml'
+    # ansible.groups = {
+    #   'routers' => ['inetRouter', 'centralRouter']
+    # }
+    ansible.host_vars = {
+      'ipaserver' => {'host_ip' => '192.168.50.10',
+                      'ansible_host_ip' => '192.168.50.10',
+                      'ipa_hostname' => 'ipaserver'
+      },
+      'ipaclient' => {'host_ip' => '192.168.50.20',
+                     'ansible_host_ip' => '192.168.50.20',
+                      'ipa_hostname' => 'ipaclient'
+      }
+    }
+  end
+end

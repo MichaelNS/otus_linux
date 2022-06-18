@@ -1,0 +1,12 @@
+---
+ipa_realm: "HW38.OTUS"
+ipa_domain: "hw38.otus"
+
+ipa_server_fqdn: "ipaserver.hw38.otus"
+ipa_client_fqdn: "ipaclient.hw38.otus"
+
+ipa_server_ip: "192.168.50.10"
+ipa_client_ip: "192.168.50.20"
+
+ipa_server_login: "admin"
+ipa_server_pass: "Otus2022"

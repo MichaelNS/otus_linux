@@ -1,0 +1,9 @@
+---
+- hosts: all
+  tasks:
+    - name: Check all nodes are already exist
+      debug:
+        msg: Hi {{ ansible_hostname }}  {{ ansible_host }}
+
+    - name: Ping node
+      ping:
