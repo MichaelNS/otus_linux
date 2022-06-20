@@ -20,3 +20,4 @@ collections:
     version: 2.3.2
 
   - name: community.grafana
+    version: 1.4.0
