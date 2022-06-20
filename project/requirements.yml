@@ -18,3 +18,5 @@ roles:
 collections:
   - name: community.crypto
     version: 2.3.2
+
+  - name: community.grafana
