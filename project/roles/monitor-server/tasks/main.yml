@@ -79,7 +79,7 @@
     force: yes
 
 - name: MONITOR SERVER | IMPORT GRAFANA DASHBOARD
-  grafana_dashboard:
+  community.grafana.grafana_dashboard:
     grafana_url: "http://192.168.30.4:3000/"
     state: present
     commit_message: Updated by ansible
