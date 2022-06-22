@@ -1,0 +1,83 @@
+---
+- name: Configure Monitor-server
+  hosts: monitorServer
+  remote_user: vagrant
+  become: true
+  roles:
+    - geerlingguy.repo-epel
+    - common
+    - monitor-server
+  tags:
+    - monitor
+
+- name: Configure Backup-server
+  hosts: backupsServer
+  remote_user: vagrant
+  become: true
+  roles:
+    - geerlingguy.repo-epel
+    - common
+    - borgbackup-server
+    - rsyslog-server
+    - geerlingguy.node_exporter
+  tags:
+    - backup
+
+- name: Configure router
+  hosts: inetRouter
+  remote_user: vagrant
+  become: true
+  roles:
+    - geerlingguy.repo-epel
+    - common
+    - geerlingguy.firewall
+    - inetRouter
+    - rsyslog-client
+    - geerlingguy.node_exporter
+  tags:
+    - routers
+
+- name: Install web-server
+  hosts: wordpressServer
+  remote_user: vagrant
+  become: true
+  roles:
+    - role: geerlingguy.repo-epel
+    - role: common
+    - role: nginx-cert
+
+    - role: geerlingguy.nginx
+      tags: nginx
+
+    - role: geerlingguy.php
+      tags: php
+
+    - role: wordpress
+      tags: mysql
+
+    - role: rsyslog-client
+    - role: rsyslog-nginx
+    - role: rsyslog-php-fpm
+
+    - role: geerlingguy.node_exporter
+  tags:
+    - web
+
+- name: Install MySQL
+  hosts: mysqlServer
+  remote_user: vagrant
+  become: true
+  roles:
+    - role: geerlingguy.repo-epel
+    - role: common
+
+    - role: mysql
+
+    - role: rsyslog-client
+
+    - role: geerlingguy.node_exporter
+
+    - role: borgbackup-client
+  tags:
+    - mysql
+

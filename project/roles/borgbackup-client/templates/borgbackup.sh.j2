@@ -1,0 +1,55 @@
+#!/bin/bash
+
+LOCKFILE=/run/mysqlborg.pid
+
+# Переменные
+USER={{ borg_user }}
+SERVER={{ borg_server_ip }}
+REPO=/var/backup/
+BACKDIR=/var/lib/mysql/backup
+REPOSITORY=$USER@$SERVER:$REPO
+
+
+cleaning(){
+rm -f "$LOCKFILE"; exit $?
+}
+
+if [ ! -d "$BACKDIR" ]
+  then
+  mkdir -p $BACKDIR
+fi
+
+if (set -o noclobber; echo "$$" > "$LOCKFILE") &> /dev/null
+then
+# trap на случай преждевременного завершения
+trap 'cleaning' INT TERM EXIT
+
+# mysql
+mysqldump -u root --password="{{ mysql_root_password }}" --lock-all-tables --all-databases > $BACKDIR/all_databases.sql
+
+
+# Backup type, it may be data, system, mysql, binlogs, etc.
+TYPEOFBACKUP=mysql
+
+echo $REPOSITORY
+
+# Backup
+# парольная фраза для шифрования
+export BORG_PASSPHRASE="{{ borg_passphare }}"
+
+BORG_RSH=BORG_PASSPHRASE={{ borg_passphare }}
+borg create -v --stats $REPOSITORY::'{now:%Y-%m-%d-%H-%M}' $BACKDIR \
+2>&1 | logger &
+
+
+# After backup
+borg prune -v --show-rc --list $REPOSITORY \
+ --keep-daily=7 --keep-monthly=6
+
+
+export BORG_PASSPHRASE=""
+
+else
+  echo "Предыдущий процесс еще не завершился"
+fi
+

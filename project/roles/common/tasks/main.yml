@@ -1,0 +1,78 @@
+---
+# - name: Install epel
+#   yum:
+#     name: epel-release
+#     state: present
+#   when: ansible_os_family == "RedHat"
+
+# https://bugzilla.redhat.com/show_bug.cgi?id=1993287
+# https://docs.fedoraproject.org/en-US/epel/#Quickstart
+#- name: Enable dnf config-manager
+#  shell: dnf config-manager --set-enabled powertools
+
+
+# See: https://github.com/ansible/ansible/issues/64852
+- block:
+
+  - name: Ensure dnf-plugins are installed on CentOS 8+.
+    yum:
+      name: dnf-plugins-core
+      state: present
+
+  - name: Enable DNF module for CentOS 8+.
+    shell: |
+      dnf config-manager --set-enabled powertools
+    args:
+      warn: false
+    register: dnf_module_enable
+    changed_when: "'Nothing to do' not in dnf_module_enable.stdout"
+
+  when:
+    - ansible_os_family == 'RedHat'
+    - ansible_distribution_major_version | int >= 8
+
+
+- name: Install utility on RedHat OS
+  yum:
+    name:
+      - tcpdump
+      - traceroute
+      - net-tools
+      - nano
+      # - setroubleshoot
+    state: present
+    update_cache: yes
+  when: ansible_os_family == "RedHat"
+
+- name: allow ssh-connect by password
+  ansible.builtin.replace:
+    path: /etc/ssh/sshd_config
+    regexp: 'PasswordAuthentication no'
+    replace: 'PasswordAuthentication yes'
+
+- name: restart sshd
+  ansible.builtin.service:
+    name: sshd
+    state: restarted
+
+
+
+# - name: put SELinux in permissive mode
+#   selinux:
+#     policy: targeted
+#     state: permissive
+#   when: ansible_os_family == "RedHat"
+
+# - name: firewalld disable
+#   service:
+#     name: firewalld
+#     state: stopped
+#     enabled: no
+
+# echo "DEFROUTE=no" >> /etc/sysconfig/network-scripts/ifcfg-eth0
+# - name: disable default route
+#   lineinfile:
+#     dest: /etc/sysconfig/network-scripts/ifcfg-eth0
+#     #dest: /etc/sysconfig/network-scripts/ifcfg-enp0s3
+#     line: DEFROUTE=no
+#   when: "'servers' in group_names"

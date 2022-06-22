@@ -1,0 +1,89 @@
+---
+#=========================== MONITORING SERVER ============================================================
+- name: MONITOR SERVER | CHANGE HOSTS FILE
+  blockinfile:
+    path: /etc/hosts
+    block: |
+      192.168.30.1 inetRouter
+      192.168.30.2 wordpressServer
+      192.168.30.3 mysqlServer
+      192.168.30.5 backupsServer
+    state: present
+
+- name: MONITOR SERVER | INSTALL PROMETHEUS+GRAFANA PACKAGES
+  yum:
+    name:
+      - golang-github-prometheus-node-exporter
+      - golang-github-prometheus
+      - grafana
+      - systemd-journal-gateway
+      - policycoreutils-python-utils
+      - setools-console
+      - setroubleshoot-server
+    state: present
+
+- name: MONITOR SERVER | COPY PROMETHEUS CONFIG
+  copy:
+    src: files/prometheus.yml
+    dest: /etc/prometheus/
+    force: yes
+
+- name: MONITOR SERVER | COPY PROMETHEUS UNIT
+  copy:
+    src: files/prometheus.service
+    dest: /etc/systemd/system/
+    force: yes
+
+- name: MONITOR SERVER | DAEMON RELOAD
+  systemd:
+    daemon-reload: yes
+
+#- name: MONITOR SERVER | CONFIG FIREWALLD FOR PROMETHEUS
+#  shell: firewall-cmd --permanent --zone=public --add-port=9100/tcp ; firewall-cmd --permanent --zone=public --add-port=9090/tcp ; firewall-cmd --permanent --zone=public --add-port=3000/tcp ; firewall-cmd --reload
+
+- name: MONITOR SERVER | START NODE_EXPORTER
+  systemd:
+    name: node_exporter
+    state: started
+    enabled: yes
+
+- name: MONITOR SERVER | START PROMETHEUS
+  systemd:
+    name: prometheus
+    state: started
+    enabled: yes
+
+- name: MONITOR SERVER | START GRAFANA
+  systemd:
+    name: grafana-server
+    state: started
+    enabled: yes
+
+- name: MONITOR SERVER | CREATE GRAFANA DATA SOURCE
+  community.grafana.grafana_datasource:
+    name: Prometheus
+    ds_type: prometheus
+    ds_url: http://192.168.30.4:9090
+    access: direct
+    grafana_url: "http://192.168.30.4:3000/"
+    grafana_user: "admin"
+    grafana_password: "admin"
+    is_default: yes
+    state: present
+
+
+- name: MONITOR SERVER | COPY GRAFANA JSON
+  copy:
+    src: files/dashboard.json
+    dest: /root
+    force: yes
+
+- name: MONITOR SERVER | IMPORT GRAFANA DASHBOARD
+  community.grafana.grafana_dashboard:
+    grafana_url: "http://192.168.30.4:3000/"
+    state: present
+    commit_message: Updated by ansible
+    overwrite: yes
+    grafana_user: "admin"
+    grafana_password: "admin"
+    path: /root/dashboard.json

@@ -1,0 +1,31 @@
+---
+- name: Install borgbackup
+  yum:
+    name: borgbackup
+    state: present
+
+- name: add user borg
+  user:
+    name: "{{  borg_user  }}"
+    state: present
+    password: "{{ borg_user_pass | password_hash('sha512') }}"
+    shell: /bin/bash
+
+- name: create /home/{{ borg_user }}/.ssh dir
+  file:
+    path:  /home/{{ borg_user }}/.ssh
+    state: directory
+    owner: "{{ borg_user }}"
+    group: "{{ borg_user }}"
+    mode: 0700
+
+- name: create authorized_keys
+  file:
+    path: /home/{{ borg_user }}/.ssh/authorized_keys
+    state: touch
+    owner: "{{ borg_user }}"
+    group: "{{ borg_user }}"
+    mode: 0600
+
+- name: Create Filesystem for additional disks
+  import_tasks: create_disk.yml

@@ -1,0 +1,392 @@
+---
+# dnf install -y curl wget vim git unzip socat bash-completion epel-release socat && sudo dnf groupinstall "Development Tools"
+# dnf install network-scripts
+
+# - name: Distribution
+#   debug: msg="{{ ansible_distribution }}"
+# - name: Distribution version
+#   debug: msg="{{ ansible_distribution_version}}"
+# - name: Distribution major version
+#   debug: msg="{{ ansible_distribution_major_version }}"
+
+
+
+
+# - name: install the 'Development tools' package group
+#   yum:
+#     name: "@Development tools"
+#     state: present
+
+# for compile Brotli
+- name: install utils
+  dnf:
+    name:
+      # - "@development-tools"
+      # - curl
+      # - wget
+      # - vim
+      - git
+      # - unzip
+      # - socat
+      - bash-completion
+      # - yum-utils
+      - pcre
+      - pcre-devel
+      - zlib
+      - zlib-devel
+      - openssl
+      - openssl-devel
+      - gcc
+      - cmake
+    state: present
+  when:
+    - ansible_os_family == 'RedHat'
+    - ansible_distribution_major_version | int >= 8
+
+
+
+
+
+
+- name: get the rpm package facts
+  package_facts:
+    manager: rpm
+
+# - name: show them
+#   debug: var=ansible_facts.packages
+
+- debug:
+    var: ansible_facts.packages.nginx
+
+
+- set_fact:
+    nginx_ver: "{{ ansible_facts.packages['nginx'][0].version }}"
+  when: "'nginx' in ansible_facts.packages"
+
+- set_fact:
+    v_nginx_ver_full: "{{ nginx_ver_full }}"
+
+- set_fact:
+    nginx_ver: "{{ ansible_facts.packages['nginx'][0].version }}"
+
+# update nginx from 1.14
+- block:
+  - name: yum module list nginx
+    shell: yum module list nginx
+
+  - name: yum module reset nginx
+    shell: yum module reset nginx -y
+
+  - name: "yum module enable nginx:{{ nginx_yum_ver }}"
+    shell: "yum module enable nginx:{{ nginx_yum_ver }} -y"
+
+  - name: "yum module enable nginx:{{ nginx_yum_ver }}"
+    shell: "yum module enable nginx:{{ nginx_yum_ver }} -y"
+
+  - name: yum install nginx
+    shell: yum install nginx -y
+
+  # - name: systemctl enable nginx
+  #   shell: systemctl enable nginx
+
+  - name: restart nginx
+    service: name=nginx state=restarted
+
+  # - name: validate nginx configuration
+  #   command: nginx -t -c /etc/nginx/nginx.conf
+
+  # - name: reload nginx
+  #   service: name=nginx state=reloaded
+  when:
+    nginx_ver != v_nginx_ver_full
+
+
+
+
+# Install Brotli
+- name: Check exists brotli module
+  stat:
+    path: /usr/share/nginx/modules/ngx_http_brotli_static_module.so
+  register: exists_brotli_module
+
+- block:
+  - name: Download and unpack nginx
+    unarchive:
+      src: https://nginx.org/download/nginx-{{ nginx_ver_full }}.tar.gz
+      dest: "/home/vagrant"
+      remote_src: yes
+      creates: "/home/vagrant/nginx-{{ nginx_ver_full }}"
+
+  - name: git clone
+    shell: cd /home/vagrant && git clone https://github.com/google/ngx_brotli.git
+
+  - name: git submodule
+    shell: cd /home/vagrant/ngx_brotli && git submodule update --init
+
+  - name: make brotli
+    shell: cd /home/vagrant/nginx-{{ nginx_ver_full }}/ && ./configure --with-compat --add-dynamic-module=../ngx_brotli && make modules
+
+  - name: cp modules 2 nginx/modules
+    shell: cd /home/vagrant/nginx-{{ nginx_ver_full }}/ && cp ./objs/*.so /usr/share/nginx/modules && chmod 644 /usr/share/nginx/modules
+
+  - name: copy brotli config
+    copy:
+      src: brotli.conf
+      dest: /etc/nginx/conf.d/
+      owner: root
+      group: root
+      mode: 0644
+
+    # /etc/nginx/nginx.conf
+    #load_module modules/ngx_http_brotli_filter_module.so; # for compressing responses on-the-fly
+    #load_module modules/ngx_http_brotli_static_module.so; # for serving pre-compressed files
+  - name: uncomment ngx_http_brotli_filter_module
+    lineinfile:
+      path: /etc/nginx/nginx.conf
+      regexp: '^#load_module modules/ngx_http_brotli_filter_module.so'
+      line: "load_module modules/ngx_http_brotli_filter_module.so; # for compressing responses on-the-fly"
+
+  - name: uncomment ngx_http_brotli_static_module
+    lineinfile:
+      path: /etc/nginx/nginx.conf
+      regexp: '^#load_module modules/ngx_http_brotli_static_module.so'
+      line: "load_module modules/ngx_http_brotli_static_module.so; # for serving pre-compressed files"
+
+  - name: validate nginx configuration
+    command: nginx -t -c /etc/nginx/nginx.conf
+
+  - name: reload nginx
+    service: name=nginx state=reloaded
+
+  when: not exists_brotli_module.stat.exists
+
+
+
+
+# nmcli connection down enp0s3 && nmcli connection up enp0s3
+- name: restart enp0s3
+  shell: nmcli connection down enp0s3 && nmcli connection up enp0s3
+  ignore_errors: true
+
+- name: disable default route
+  lineinfile:
+    dest: /etc/sysconfig/network-scripts/ifcfg-enp0s3
+    line: DEFROUTE=no
+
+- name: add default gateway for centralRouter
+  lineinfile:
+    dest: /etc/sysconfig/network-scripts/ifcfg-enp0s8
+    line: GATEWAY=192.168.30.1
+
+- name: add default gateway
+  shell: route add default gw 192.168.30.1
+  ignore_errors: true
+
+
+- name: add routes
+  template:
+    src: '{{  item  }}'
+    dest: /etc/sysconfig/network-scripts/
+  loop:
+    - route-enp0s8
+  # notify:
+  #   - restart_networking
+
+- name: restart networking
+  service:
+    name: NetworkManager.service
+    state: restarted
+    enabled: yes
+
+- name: create /var/www/{{ server_name }} directory for unarchiving
+  file:
+    path: /var/www/{{ server_name }}
+    state: directory
+
+- name: Download and unpack latest WordPress
+  unarchive:
+    src: https://wordpress.org/wordpress-5.0.13.tar.gz
+    dest: "/var/www/{{ server_name }}"
+    remote_src: yes
+    creates: "/var/www/{{ server_name }}/wordpress"
+
+
+
+
+
+
+
+- name: Set ownership Redhat
+  file:
+    path: "/var/www/{{ server_name }}"
+    state: directory
+    recurse: yes
+    owner: nginx
+    group: nginx
+  when:
+    - ansible_os_family == "RedHat"
+
+- name: Set ownership Debian
+  file:
+    path: "/var/www/{{ server_name }}"
+    state: directory
+    recurse: yes
+    owner: www-data
+    group: www-data
+  when:
+    - ansible_os_family == "Debian"
+
+
+
+- name: Copy WordPress config file
+  template:
+    src: wp-config.php.j2
+    dest: "/var/www/{{ server_name }}/wordpress/wp-config.php"
+
+
+
+- name: install SEManage
+  yum: pkg=policycoreutils-python state=present
+  when:
+    - ansible_os_family == 'CentOS'
+    - ansible_distribution_major_version | int <= 7
+
+- name: install SEManage 2
+  yum:
+    name:
+      - policycoreutils-python-utils
+      - setools-console
+      - setroubleshoot-server
+    state: present
+  when:
+    - ansible_os_family == 'RedHat'
+    - ansible_distribution_major_version | int >= 8
+
+- name: set the SELinux policy for the Wordpress directory
+  command: semanage fcontext -a -t httpd_sys_content_t "{{ wp_home_dir }}/wordpress(/.*)?"
+  tags:
+  - skip_wp_semanage
+
+- name: set the SELinux policy for wp-config.php
+  command: semanage fcontext -a -t httpd_sys_script_exec_t "{{ wp_home_dir }}/wp-config\.php"
+  tags:
+  - skip_wp_semanage
+
+- name: set the SELinux policy for wp-content directory
+  command: semanage fcontext -a -t httpd_sys_rw_content_t "{{ wp_home_dir }}/wp-content(/.*)?"
+  tags:
+  - skip_wp_semanage
+
+- name: set the SELinux policy for the *.php files
+  command: semanage fcontext -a -t httpd_sys_script_exec_t "{{ wp_home_dir }}/wordpress/.*\.php"
+  tags:
+  - skip_wp_semanage
+
+- name: set the SELinux policy for the Upgrade directory
+  command: semanage fcontext -a -t httpd_sys_rw_content_t "{{ wp_home_dir }}/wp-content/upgrade(/.*)?"
+  tags:
+  - skip_wp_semanage
+
+- name: set the SELinux policy for the Uploads directory
+  command: semanage fcontext -a -t httpd_sys_rw_content_t "{{ wp_home_dir }}/wp-content/uploads(/.*)?"
+  tags:
+  - skip_wp_semanage
+
+- name: set the SELinux policy for the wp-includes php files
+  command: semanage fcontext -a -t httpd_sys_script_exec_t "{{ wp_home_dir }}/wp-includes/.*\.php"
+  tags:
+  - skip_wp_semanage
+
+- name: set the SELinux on all the Files
+  command: restorecon -Rv {{ wp_home_dir }}
+#  command: restorecon -RF /srv/wordpress
+  tags:
+  - skip_wp_semanage
+
+- name: set the SELinux bool to allow connection to db
+  command: setsebool -P httpd_can_network_connect_db 1
+  tags:
+  - skip_wp_semanage
+
+- name: Start php-fpm Service
+  service: name=php-fpm state=started enabled=yes
+  ignore_errors: true
+  tags:
+  - skip_wp_semanage
+
+
+
+
+
+
+- name: WEB SERVER | CONFIGURE SELINUX FOR NGINX error.log
+  shell: semanage fcontext -a -t httpd_sys_rw_content_t /var/log/nginx/error.log ; restorecon -v /var/log/nginx/error.log
+  tags:
+  - skip_wp_semanage
+
+- name: WEB SERVER | CONFIGURE SELINUX FOR NGINX site.project.error.log
+  shell: semanage fcontext -a -t httpd_sys_rw_content_t /var/log/nginx/site.project.error.log ; restorecon -v /var/log/nginx/site.project.error.log
+  tags:
+  - skip_wp_semanage
+
+
+- name: WEB SERVER | CONFIGURE SELINUX FOR NGINX access.log
+  shell: semanage fcontext -a -t httpd_sys_rw_content_t /var/log/nginx/access.log ; restorecon -v /var/log/nginx/access.log
+  tags:
+  - skip_wp_semanage
+
+- name: WEB SERVER | CONFIGURE SELINUX FOR NGINX site.project.access.log
+  shell: semanage fcontext -a -t httpd_sys_rw_content_t /var/log/nginx/site.project.access.log ; restorecon -v /var/log/nginx/site.project.access.log
+  tags:
+  - skip_wp_semanage
+
+
+
+
+
+- name: set the SELinux bool to allow 2 httpd_execmem
+  command: setsebool -P httpd_execmem 1
+  tags:
+  - skip_wp_semanage
+
+
+- name: set the SELinux bool to allow 2 httpd_can_network_connect
+  command: setsebool -P httpd_can_network_connect 1
+  tags:
+  - skip_wp_semanage
+
+
+- name: set the SELinux bool to allow 2 httpd_graceful_shutdown
+  command: setsebool -P httpd_graceful_shutdown 1
+  tags:
+  - skip_wp_semanage
+
+
+
+- name: set the SELinux bool to allow 2 httpd_can_network_relay
+  command: setsebool -P httpd_can_network_relay 1
+  tags:
+  - skip_wp_semanage
+
+
+
+- name: set the SELinux bool to allow 2 nis_enabled
+  command: setsebool -P nis_enabled 1
+  tags:
+  - skip_wp_semanage
+
+
+- name: set the SELinux bool to allow 2 httpd_unified
+  command: setsebool -P httpd_unified 1
+  tags:
+  - skip_wp_semanage
+
+
+
+
+# /var/log/php-fpm/error.log
+# - name: WEB SERVER | CONFIGURE SELINUX FOR NGINX site.project.access.log
+#   shell: semanage fcontext -a -t httpd_sys_rw_content_t /var/log/nginx/site.project.access.log ; restorecon -v /var/log/nginx/site.project.access.log
+#   tags:
+#   - skip_wp_semanage
+

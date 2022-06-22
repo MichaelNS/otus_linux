@@ -1,0 +1,107 @@
+---
+- name: Install borgbackup
+  yum:
+    name: borgbackup
+    state: present
+
+
+
+
+- name: add user {{ borg_user }}
+  user:
+    name: "{{  borg_user  }}"
+    state: present
+    password: "{{ borg_user_pass | password_hash('sha512') }}"
+    shell: /bin/bash
+
+- name: install python
+  yum:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - policycoreutils-python
+    - python-pip
+
+- name: Install pexpect throuhg pip
+  become: true
+  pip:
+    name: "pexpect>=3.3"
+    state: present
+
+- name: Generate an OpenSSH keypair with the default values (4096 bits, rsa)
+  community.crypto.openssh_keypair:
+    path: /root/.ssh/id_rsa
+
+
+- name: "Set variables"
+  set_fact:
+    qwe_ans: "borg@{{ borg_server_ip }}'s password:"
+
+- debug:
+    msg: "ans '{{ qwe_ans }}'"
+
+# todo - add template
+- name: copy public key to backup:/home/{{ borg_user }}/.ssh/authorized_keys
+  expect:
+    command: scp -o "StrictHostKeyChecking=no" /root/.ssh/id_rsa.pub {{ borg_user }}@{{ borg_server_ip }}:/home/{{ borg_user }}/.ssh/authorized_keys
+    echo: true
+    timeout: 5
+    responses:
+      Are you sure you want to continue connecting (yes/no)?: "yes"
+      borg@192.168.30.5's password: "{{ borg_user_pass }}"
+      # "'{{ qwe_ans }}'": "{{ borg_user_pass }}"
+
+# debug
+- name: get the username running the deploy
+  become: false
+  local_action: command whoami
+  register: username_on_the_host
+- debug: var=username_on_the_host
+
+
+
+- name: init borg
+  expect:
+    command: borg init --encryption=repokey {{ borg_user }}@{{ borg_server_ip }}:/var/backup/
+    responses:
+      (?i)Enter new passphrase: "{{  borg_passphare  }}"
+      (?i)Enter same passphrase again: "{{  borg_passphare  }}"
+      (?i)Do you want your passphrase to be displayed for verification?: "n"
+  ignore_errors: true
+
+- name: Copy backup script
+  template:
+    src: borgbackup.sh.j2
+    dest: "{{ path_to_backup_script }}"
+    mode: '0740'
+
+- name: Configure borg-backup.service
+  template:
+    src: borg-backup.service.j2
+    dest: /etc/systemd/system/borg-backup.service
+    owner: "root"
+    group: "root"
+    mode: '0644'
+
+- name: Configure borg-backup.timer
+  template:
+    src: borg-backup.timer.j2
+    dest: /etc/systemd/system/borg-backup.timer
+    owner: "root"
+    group: "root"
+    mode: '0644'
+
+- name: reload systremd
+  systemd:
+    daemon_reload: yes
+
+- name: Enable borg-backup.timer
+  systemd:
+    name: borg-backup.timer
+    state: started
+    enabled: yes
+
+- name: start & enable borg service
+  systemd:
+    name: borg-backup.service
+    state: started
